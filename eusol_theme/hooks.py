@@ -1,0 +1,6 @@
+app_name = "eusol_theme"
+app_title = "Eusol Theme"
+app_publisher = "Eusol Organics"
+app_description = "Custom login theme for Eusol Organics"
+app_email = "eusolghana@gmail.com"
+app_license = "MIT"
