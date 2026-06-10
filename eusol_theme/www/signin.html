@@ -5,3 +5,132 @@
 <h1>Test Login Page</h1>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sign In | Eusol Organics</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<div class="eusol-login-wrap">
+  <div class="eusol-left">
+    <div class="eusol-brand">
+      <img src="/files/EUSOL--LOGO.png" alt="Eusol Organics" class="eusol-logo"/>
+      <span class="eusol-brand-name">Eusol Organics</span>
+    </div>
+    <div class="eusol-hero">
+      <p class="eusol-eyebrow">Business Portal</p>
+      <h1 class="eusol-heading">Nature's best,<br><em>delivered with</em><br>purpose.</h1>
+      <p class="eusol-body">Manage your organic products, inventory, customers, and operations — all in one place.</p>
+    </div>
+    <div class="eusol-stats">
+      <div class="eusol-stat"><span class="eusol-stat-num">100%</span><span class="eusol-stat-lbl">Organic sourced</span></div>
+      <div class="eusol-stat"><span class="eusol-stat-num">GHS</span><span class="eusol-stat-lbl">Local currency</span></div>
+      <div class="eusol-stat"><span class="eusol-stat-num">GH</span><span class="eusol-stat-lbl">Based in Ghana</span></div>
+    </div>
+  </div>
+  <div class="eusol-right">
+    <div class="eusol-form-wrap">
+      <div class="eusol-form-header">
+        <h2 class="eusol-form-title">Welcome back</h2>
+        <p class="eusol-form-sub">Sign in to your workspace</p>
+      </div>
+      <div id="login-form">
+        <div class="form-group">
+          <input type="email" id="login_email" class="form-control" placeholder="Email address" required autofocus autocomplete="username"/>
+        </div>
+        <div class="form-group" style="margin-top:1rem">
+          <input type="password" id="login_password" class="form-control" placeholder="Password" required autocomplete="current-password"/>
+        </div>
+        <div style="text-align:right; margin:0.5rem 0 1rem">
+          <a href="/update-password" style="font-size:12px; color:#5a8a6a;">Forgot Password?</a>
+        </div>
+        <button id="login-btn" class="btn-login">Sign In</button>
+        <p id="login-error" style="color:red; font-size:13px; margin-top:0.5rem; display:none;"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body,html{height:100%;font-family:'DM Sans',sans-serif}
+.eusol-login-wrap{display:flex;min-height:100vh}
+.eusol-left{width:42%;background:#1b3a2d;display:flex;flex-direction:column;justify-content:space-between;padding:3rem;position:relative;overflow:hidden}
+.eusol-left::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 10% 90%,rgba(90,138,106,.3) 0%,transparent 45%),radial-gradient(circle at 90% 10%,rgba(45,90,61,.4) 0%,transparent 40%);pointer-events:none}
+.eusol-brand{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+.eusol-logo{width:42px;height:42px;object-fit:contain}
+.eusol-brand-name{color:#fff;font-size:17px;font-weight:600;font-family:'Playfair Display',serif}
+.eusol-hero{position:relative;z-index:1}
+.eusol-eyebrow{color:#c9a84c;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:1rem}
+.eusol-heading{color:#fff;font-size:38px;line-height:1.2;font-weight:400;margin-bottom:1rem;font-family:'Playfair Display',serif}
+.eusol-heading em{color:#a8c5b0;font-style:italic}
+.eusol-body{color:rgba(168,197,176,.8);font-size:14px;line-height:1.7;font-weight:300}
+.eusol-stats{display:flex;gap:2rem;padding-top:2rem;border-top:1px solid rgba(168,197,176,.15);position:relative;z-index:1}
+.eusol-stat{display:flex;flex-direction:column;gap:2px}
+.eusol-stat-num{color:#fff;font-size:20px;font-weight:600}
+.eusol-stat-lbl{color:rgba(168,197,176,.6);font-size:11px}
+.eusol-right{flex:1;background:#fdfaf4;display:flex;align-items:center;justify-content:center;padding:3rem}
+.eusol-form-wrap{width:100%;max-width:380px}
+.eusol-form-header{margin-bottom:2rem}
+.eusol-form-title{font-size:26px;font-weight:600;color:#1b3a2d;margin-bottom:.25rem;font-family:'Playfair Display',serif}
+.eusol-form-sub{color:#888;font-size:13px}
+.form-group{margin-bottom:0}
+.form-control{width:100%;padding:12px 16px;background:#f5f0e4;border:1px solid rgba(27,58,45,.2);border-radius:8px;font-size:14px;color:#1b3a2d;outline:none;font-family:'DM Sans',sans-serif}
+.form-control:focus{border-color:#5a8a6a;box-shadow:0 0 0 3px rgba(90,138,106,.1);background:#fff}
+.btn-login{width:100%;padding:13px;background:#1b3a2d;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-login:hover{background:#2d5a3d}
+@media(max-width:768px){.eusol-left{display:none}.eusol-right{padding:2rem 1.5rem}}
+</style>
+
+<script>
+function doLogin() {
+  var email = document.getElementById('login_email').value;
+  var password = document.getElementById('login_password').value;
+  var errorEl = document.getElementById('login-error');
+  
+  if (!email || !password) {
+    errorEl.textContent = 'Please enter your email and password.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  document.getElementById('login-btn').textContent = 'Signing in...';
+  errorEl.style.display = 'none';
+
+  fetch('/api/method/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'usr=' + encodeURIComponent(email) + '&pwd=' + encodeURIComponent(password)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.message === 'Logged In') {
+      window.location.href = '/app';
+    } else {
+      errorEl.textContent = 'Invalid email or password. Please try again.';
+      errorEl.style.display = 'block';
+      document.getElementById('login-btn').textContent = 'Sign In';
+    }
+  })
+  .catch(function() {
+    errorEl.textContent = 'Connection error. Please try again.';
+    errorEl.style.display = 'block';
+    document.getElementById('login-btn').textContent = 'Sign In';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('login-btn').addEventListener('click', doLogin);
+  document.getElementById('login_password').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+  document.getElementById('login_email').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+});
+</script>
+</body>
+</html>
