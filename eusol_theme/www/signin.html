@@ -74,32 +74,36 @@ body,html{margin:0;padding:0}
 </style>
 
 <script>
+function login() {
+  var email = document.getElementById('login_email').value;
+  var password = document.getElementById('login_password').value;
+
+  fetch('/api/method/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: 'usr=' + encodeURIComponent(email) + '&pwd=' + encodeURIComponent(password)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.message === 'Logged In') {
+      window.location.href = '/app';
+    } else {
+      alert('Invalid credentials. Please try again.');
+    }
+  })
+  .catch(function() {
+    alert('Login failed. Please try again.');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('login-btn').addEventListener('click', function() {
-    var email = document.getElementById('login_email').value;
-    var password = document.getElementById('login_password').value;
-    
-    var formData = new FormData();
-    formData.append('usr', email);
-    formData.append('pwd', password);
-    formData.append('cmd', 'login');
-    
-    fetch('/api/method/login', {
-      method: 'POST',
-      body: formData
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.message === 'Logged In') {
-        window.location.href = '/app';
-      } else {
-        alert('Invalid credentials. Please try again.');
-      }
-    })
-    .catch(function(err) {
-      console.log(err);
-      alert('Login failed. Please try again.');
-    });
+  document.getElementById('login_password').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') login();
+  });
+  document.getElementById('login_email').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') login();
   });
 });
 </script>
