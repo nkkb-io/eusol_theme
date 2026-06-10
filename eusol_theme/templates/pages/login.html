@@ -77,18 +77,34 @@ body,html{margin:0;padding:0}
 function login() {
   var email = document.getElementById('login_email').value;
   var password = document.getElementById('login_password').value;
-  frappe.call({
-    method: 'login',
-    args: { usr: email, pwd: password },
-    callback: function(r) {
-      if (!r.exc) {
-        window.location.href = '/app';
-      }
+  
+  fetch('/api/method/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-Frappe-CSRF-Token': 'fetch'
+    },
+    body: 'usr=' + encodeURIComponent(email) + '&pwd=' + encodeURIComponent(password)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.message === 'Logged In') {
+      window.location.href = '/app';
+    } else {
+      alert('Invalid credentials. Please try again.');
     }
+  })
+  .catch(function() {
+    alert('Login failed. Please try again.');
   });
 }
-document.getElementById('login_password').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') login();
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('login_password').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') login();
+  });
+  document.getElementById('login_email').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') login();
+  });
 });
 </script>
-{% endblock %}
