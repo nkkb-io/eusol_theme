@@ -1,5 +1,7 @@
 {% extends "templates/web.html" %}
 {% block title %}Sign In | Eusol Organics{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
 {% block content %}
 <div class="eusol-login-wrap">
   <div class="eusol-left">
@@ -24,14 +26,26 @@
         <h2 class="eusol-form-title">Welcome back</h2>
         <p class="eusol-form-sub">Sign in to your workspace</p>
       </div>
-      {% include "templates/includes/login/login.html" %}
+      <div id="login-form">
+        <div class="form-group">
+          <input type="email" id="login_email" class="form-control" placeholder="Email address" required autofocus autocomplete="username"/>
+        </div>
+        <div class="form-group" style="margin-top:1rem">
+          <input type="password" id="login_password" class="form-control" placeholder="Password" required autocomplete="current-password"/>
+        </div>
+        <div style="text-align:right; margin:0.5rem 0 1rem">
+          <a href="/update-password" style="font-size:12px; color:#5a8a6a;">Forgot Password?</a>
+        </div>
+        <button id="login-btn" class="btn btn-primary btn-block" onclick="login()">Sign In</button>
+      </div>
     </div>
   </div>
 </div>
+
 <style>
 *{box-sizing:border-box}
 body,html{margin:0;padding:0}
-.navbar,.web-footer,footer{display:none!important}
+.navbar,.web-footer,footer,.page-header{display:none!important}
 .eusol-login-wrap{display:flex;min-height:100vh;font-family:'DM Sans',sans-serif}
 .eusol-left{width:42%;background:#1b3a2d;display:flex;flex-direction:column;justify-content:space-between;padding:3rem;position:relative;overflow:hidden}
 .eusol-left::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 10% 90%,rgba(90,138,106,.3) 0%,transparent 45%),radial-gradient(circle at 90% 10%,rgba(45,90,61,.4) 0%,transparent 40%);pointer-events:none}
@@ -52,13 +66,29 @@ body,html{margin:0;padding:0}
 .eusol-form-header{margin-bottom:2rem}
 .eusol-form-title{font-size:26px;font-weight:600;color:#1b3a2d;margin-bottom:.25rem}
 .eusol-form-sub{color:#888;font-size:13px}
-.eusol-form-wrap .page-card{box-shadow:none!important;border:none!important;background:transparent!important;padding:0!important}
-.eusol-form-wrap .page-card-head{display:none!important}
-.eusol-form-wrap .form-control{background:#f5f0e4!important;border-color:rgba(27,58,45,.2)!important;border-radius:8px!important;color:#1b3a2d!important}
-.eusol-form-wrap .form-control:focus{background:#fff!important;border-color:#5a8a6a!important;box-shadow:0 0 0 3px rgba(90,138,106,.1)!important}
-.eusol-form-wrap .btn-primary,.eusol-form-wrap button[type="submit"]{background:#1b3a2d!important;border-color:#1b3a2d!important;border-radius:8px!important;color:#fff!important}
-.eusol-form-wrap .btn-login-option{background:#1b3a2d!important;border-color:#1b3a2d!important;border-radius:8px!important;color:#fff!important}
-.eusol-form-wrap a{color:#5a8a6a!important}
+.form-control{width:100%;padding:12px 16px;background:#f5f0e4;border:1px solid rgba(27,58,45,.2);border-radius:8px;font-size:14px;color:#1b3a2d;outline:none}
+.form-control:focus{border-color:#5a8a6a;box-shadow:0 0 0 3px rgba(90,138,106,.1);background:#fff}
+.btn-primary{width:100%;padding:13px;background:#1b3a2d;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer}
+.btn-primary:hover{background:#2d5a3d}
 @media(max-width:768px){.eusol-left{display:none}.eusol-right{padding:2rem 1.5rem}}
 </style>
+
+<script>
+function login() {
+  var email = document.getElementById('login_email').value;
+  var password = document.getElementById('login_password').value;
+  frappe.call({
+    method: 'login',
+    args: { usr: email, pwd: password },
+    callback: function(r) {
+      if (!r.exc) {
+        window.location.href = '/app';
+      }
+    }
+  });
+}
+document.getElementById('login_password').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') login();
+});
+</script>
 {% endblock %}
