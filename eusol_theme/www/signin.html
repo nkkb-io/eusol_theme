@@ -39,9 +39,10 @@
           <input type="password" id="login_password" class="form-control" placeholder="Password" required autocomplete="current-password" style="padding-right:50px;"/>
           <span id="toggle-pwd" onclick="togglePassword()" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:12px;color:#5a8a6a;font-weight:500;user-select:none;">Show</span>
         </div>
-        <div style="text-align:right; margin:0.5rem 0 1rem">
-          <a href="#" onclick="forgotPassword()" style="font-size:12px; color:#5a8a6a;">Forgot Password?</a>
+      <div style="text-align:right; margin:0.5rem 0 1rem">
+        <a href="#" onclick="forgotPassword()" style="font-size:12px; color:#5a8a6a;">Forgot Password?</a>
         </div>
+        <p id="forgot-msg" style="font-size:12px; color:#2d7a4f; text-align:center; display:none; margin-bottom:0.5rem;"></p>
         <button id="login-btn" class="btn-login">Sign In</button>
         <p id="login-error" style="color:red; font-size:13px; margin-top:0.5rem; display:none;"></p>
       </div>
@@ -95,8 +96,11 @@ function togglePassword() {
 
 function forgotPassword() {
   var email = document.getElementById('login_email').value;
+  var msgEl = document.getElementById('forgot-msg');
   if (!email) {
-    alert('Please enter your email address first.');
+    msgEl.style.color = 'red';
+    msgEl.textContent = 'Please enter your email address first.';
+    msgEl.style.display = 'block';
     return;
   }
   fetch('/api/method/frappe.core.doctype.user.user.reset_password', {
@@ -106,10 +110,14 @@ function forgotPassword() {
   })
   .then(function(r) { return r.json(); })
   .then(function() {
-    alert('If this email is registered, a password reset link has been sent to your inbox.');
+    msgEl.style.color = '#2d7a4f';
+    msgEl.textContent = 'Password reset link sent to your inbox.';
+    msgEl.style.display = 'block';
   })
   .catch(function() {
-    alert('If this email is registered, a password reset link has been sent to your inbox.');
+    msgEl.style.color = '#2d7a4f';
+    msgEl.textContent = 'Password reset link sent to your inbox.';
+    msgEl.style.display = 'block';
   });
 }
 
