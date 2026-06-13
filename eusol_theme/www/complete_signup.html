@@ -1,0 +1,303 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("Complete Your Account") }} | Eusol Organics{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block head_include %}
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  .navbar, .web-header, footer.web-footer { display: none !important; }
+  body { background: #fdfaf4 !important; font-family: 'DM Sans', sans-serif; }
+
+  .signup-wrap {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── LEFT PANEL ── */
+  .signup-left {
+    width: 42%;
+    min-height: 100vh;
+    background: #1b3a2d;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .signup-left::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 10% 90%, rgba(90,138,106,.3) 0%, transparent 45%),
+      radial-gradient(circle at 90% 10%, rgba(45,90,61,.4) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  .signup-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .signup-logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+  }
+
+  .signup-brand-name {
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .signup-hero {
+    position: relative;
+    z-index: 1;
+  }
+
+  .signup-eyebrow {
+    color: #c9a84c;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .signup-heading {
+    color: #fff;
+    font-size: 38px;
+    line-height: 1.2;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .signup-heading em {
+    color: #a8c5b0;
+    font-style: italic;
+  }
+
+  .signup-body-text {
+    color: rgba(168,197,176,.8);
+    font-size: 14px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .signup-stats {
+    display: flex;
+    gap: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(168,197,176,.15);
+    position: relative;
+    z-index: 1;
+  }
+
+  .signup-stat { display: flex; flex-direction: column; gap: 2px; }
+  .signup-stat-num { color: #fff; font-size: 20px; font-weight: 600; }
+  .signup-stat-lbl { color: rgba(168,197,176,.6); font-size: 11px; }
+
+  /* ── RIGHT PANEL ── */
+  .signup-right {
+    flex: 1;
+    background: #fdfaf4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+  }
+
+  .signup-form-wrap {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .signup-form-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: #1b3a2d;
+    margin-bottom: 0.25rem;
+  }
+
+  .signup-form-sub {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #3d3d38;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    background: #f5f0e4;
+    border: 1px solid rgba(27,58,45,.2);
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1b3a2d;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-control:focus {
+    border-color: #5a8a6a;
+    box-shadow: 0 0 0 3px rgba(90,138,106,.1);
+    background: #fff;
+  }
+
+  /* status message */
+  #signup-msg {
+    font-size: 13px;
+    min-height: 18px;
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .btn-signup {
+    width: 100%;
+    padding: 13px;
+    background: #1b3a2d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-signup:hover { background: #2d5a3d; }
+  .btn-signup:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    color: #5a8a6a;
+    text-decoration: none;
+    margin-top: 1rem;
+  }
+
+  .back-link:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .signup-left { display: none; }
+    .signup-right { padding: 2rem 1.5rem; }
+  }
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="signup-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="signup-left">
+    <div class="signup-brand">
+      <img src="/files/EUSOL--LOGO.png" alt="Eusol Organics" class="signup-logo"
+           onerror="this.style.display='none'" />
+      <span class="signup-brand-name">Eusol Organics</span>
+    </div>
+
+    <div class="signup-hero">
+      <p class="signup-eyebrow">Welcome Aboard</p>
+      <h1 class="signup-heading">You're almost<br/><em>part of the</em><br/>team.</h1>
+      <p class="signup-body-text">Complete your account setup to access your Eusol Organics workspace.</p>
+    </div>
+
+    <div class="signup-stats">
+      <div class="signup-stat"><span class="signup-stat-num">100%</span><span class="signup-stat-lbl">Organic sourced</span></div>
+      <div class="signup-stat"><span class="signup-stat-num">GHS</span><span class="signup-stat-lbl">Local currency</span></div>
+      <div class="signup-stat"><span class="signup-stat-num">AUTHENTIC</span><span class="signup-stat-lbl">Based in Ghana</span></div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="signup-right">
+    <div class="signup-form-wrap">
+
+      <h2 class="signup-form-title">One last step</h2>
+      <p class="signup-form-sub">Complete your profile to activate your account.</p>
+
+      <form method="POST" action="/api/method/frappe.templates.pages.login.login_oauth_user"
+            onsubmit="handleSignup(event)">
+
+        <input type="hidden" name="key" value="{{ frappe.form_dict.key | e }}">
+
+        <div class="form-group">
+          <label class="field-label" for="email_id">Email address</label>
+          <input type="email" name="email_id" id="email_id"
+                 class="form-control" placeholder="you@example.com" required autofocus />
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="first_name">First name</label>
+          <input type="text" name="first_name" id="first_name"
+                 class="form-control" placeholder="First name" required />
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="last_name">Last name</label>
+          <input type="text" name="last_name" id="last_name"
+                 class="form-control" placeholder="Last name (optional)" />
+        </div>
+
+        <p id="signup-msg"></p>
+
+        <button type="submit" class="btn-signup" id="signup-btn">Complete account setup</button>
+      </form>
+
+      <a href="/signin" class="back-link">← Back to sign in</a>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function handleSignup(e) {
+    var btn = document.getElementById('signup-btn');
+    var msg = document.getElementById('signup-msg');
+    var email = document.getElementById('email_id').value.trim();
+    var first  = document.getElementById('first_name').value.trim();
+
+    if (!email || !first) {
+      e.preventDefault();
+      msg.style.color = '#c0392b';
+      msg.textContent = 'Please fill in your email and first name.';
+      return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = 'Setting up your account…';
+    msg.style.color = '#888';
+    msg.textContent = 'Please wait…';
+  }
+</script>
+{% endblock %}
