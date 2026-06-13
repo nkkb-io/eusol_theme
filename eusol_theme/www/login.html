@@ -39,12 +39,14 @@
           <input type="password" id="login_password" class="form-control" placeholder="Password" required autocomplete="current-password" style="padding-right:50px;"/>
           <span id="toggle-pwd" onclick="togglePassword()" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:12px;color:#5a8a6a;font-weight:500;user-select:none;">Show</span>
         </div>
-      <div style="text-align:right; margin:0.5rem 0 1rem">
-        <a href="#" onclick="forgotPassword()" style="font-size:12px; color:#5a8a6a;">Forgot Password?</a>
+        <div style="text-align:right; margin:0.5rem 0 1rem">
+          <a href="#" onclick="forgotPassword(); return false;" style="font-size:12px; color:#5a8a6a;">Forgot Password?</a>
         </div>
-        <p id="forgot-msg" style="font-size:12px; color:#2d7a4f; text-align:center; display:none; margin-bottom:0.5rem;"></p>
+
+        <!-- Inline status messages (replaces all alert() calls) -->
+        <p id="login-msg" style="font-size:13px; min-height:18px; text-align:center; margin-bottom:0.75rem;"></p>
+
         <button id="login-btn" class="btn-login">Sign In</button>
-        <p id="login-error" style="color:red; font-size:13px; margin-top:0.5rem; display:none;"></p>
       </div>
     </div>
   </div>
@@ -76,14 +78,15 @@ body,html{height:100%;font-family:'DM Sans',sans-serif}
 .form-group{margin-bottom:0}
 .form-control{width:100%;padding:12px 16px;background:#f5f0e4;border:1px solid rgba(27,58,45,.2);border-radius:8px;font-size:14px;color:#1b3a2d;outline:none;font-family:'DM Sans',sans-serif}
 .form-control:focus{border-color:#5a8a6a;box-shadow:0 0 0 3px rgba(90,138,106,.1);background:#fff}
-.btn-login{width:100%;padding:13px;background:#1b3a2d;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem}
+.btn-login{width:100%;padding:13px;background:#1b3a2d;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem;transition:background 0.2s}
 .btn-login:hover{background:#2d5a3d}
+.btn-login:disabled{opacity:0.6;cursor:not-allowed}
 @media(max-width:768px){.eusol-left{display:none}.eusol-right{padding:2rem 1.5rem}}
 </style>
 
 <script>
 function togglePassword() {
-  var input = document.getElementById('login_password');
+  var input  = document.getElementById('login_password');
   var toggle = document.getElementById('toggle-pwd');
   if (input.type === 'password') {
     input.type = 'text';
@@ -94,75 +97,88 @@ function togglePassword() {
   }
 }
 
+function setMsg(text, color) {
+  var el = document.getElementById('login-msg');
+  el.textContent  = text;
+  el.style.color  = color || '#888';
+}
+
 function forgotPassword() {
-  var email = document.getElementById('login_email').value;
-  var msgEl = document.getElementById('forgot-msg');
+  var email = document.getElementById('login_email').value.trim();
   if (!email) {
-    msgEl.style.color = 'red';
-    msgEl.textContent = 'Please enter your email address first.';
-    msgEl.style.display = 'block';
+    setMsg('Enter your email address above first.', '#c0392b');
     return;
   }
+  setMsg('Sending reset link…', '#888');
   fetch('/api/method/frappe.core.doctype.user.user.reset_password', {
-    method: 'POST',
+    method:  'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'user=' + encodeURIComponent(email)
+    body:    'user=' + encodeURIComponent(email)
   })
-  .then(function(r) { return r.json(); })
   .then(function() {
-    msgEl.style.color = '#2d7a4f';
-    msgEl.textContent = 'Password reset link sent to your inbox.';
-    msgEl.style.display = 'block';
+    setMsg('Password reset link sent to your inbox.', '#2d7a4f');
   })
   .catch(function() {
-    msgEl.style.color = '#2d7a4f';
-    msgEl.textContent = 'Password reset link sent to your inbox.';
-    msgEl.style.display = 'block';
+    // Show success anyway — avoids user enumeration
+    setMsg('Password reset link sent to your inbox.', '#2d7a4f');
   });
 }
 
-function doLogin() {
-  var email = document.getElementById('login_email').value;
+async function doLogin() {
+  var email    = document.getElementById('login_email').value.trim();
   var password = document.getElementById('login_password').value;
-  var errorEl = document.getElementById('login-error');
-  
+  var btn      = document.getElementById('login-btn');
+
   if (!email || !password) {
-    errorEl.textContent = 'Please enter your email and password.';
-    errorEl.style.display = 'block';
+    setMsg('Please enter your email and password.', '#c0392b');
     return;
   }
-  document.getElementById('login-btn').textContent = 'Signing in...';
-  errorEl.style.display = 'none';
 
-  fetch('/api/method/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'usr=' + encodeURIComponent(email) + '&pwd=' + encodeURIComponent(password)
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
+  setMsg('Signing in…', '#888');
+  btn.disabled    = true;
+  btn.textContent = 'Signing in…';
+
+  try {
+    var res  = await fetch('/api/method/login', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body:    new URLSearchParams({ usr: email, pwd: password })
+    });
+
+    var data = await res.json();
+
     if (data.message === 'Logged In') {
-      window.location.href = '/app';
+      // ✅ No 2FA — go to role-based dashboard
+      window.location.href = '/home';
+
+    } else if (data.verification) {
+      // 🔐 2FA required — store session data and redirect to verify page
+      sessionStorage.setItem('2fa_usr',    email);
+      sessionStorage.setItem('2fa_method', data.verification.method || 'OTP App');
+      sessionStorage.setItem('2fa_prompt', data.verification.prompt || '');
+      sessionStorage.setItem('2fa_tmp_id', data.tmp_id              || '');
+      window.location.href = '/verify';
+
     } else {
-      errorEl.textContent = 'Invalid email or password. Please try again.';
-      errorEl.style.display = 'block';
-      document.getElementById('login-btn').textContent = 'Sign In';
+      setMsg(data.message || 'Invalid email or password. Please try again.', '#c0392b');
+      btn.disabled    = false;
+      btn.textContent = 'Sign In';
     }
-  })
-  .catch(function() {
-    errorEl.textContent = 'Connection error. Please try again.';
-    errorEl.style.display = 'block';
-    document.getElementById('login-btn').textContent = 'Sign In';
-  });
+
+  } catch (err) {
+    setMsg('Connection error. Please try again.', '#c0392b');
+    btn.disabled    = false;
+    btn.textContent = 'Sign In';
+  }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('login-btn').addEventListener('click', doLogin);
-  document.getElementById('login_password').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') doLogin();
-  });
-  document.getElementById('login_email').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') doLogin();
+
+  ['login_password', 'login_email'].forEach(function (id) {
+    document.getElementById(id).addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') doLogin();
+    });
   });
 });
 </script>
