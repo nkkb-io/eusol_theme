@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify Identity | Eusol Organics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --green-deep:   #1e3d2f;
+      --green-mid:    #2a5240;
+      --green-light:  #3a6b52;
+      --cream:        #f5f0e8;
+      --cream-dark:   #ede7d9;
+      --ink:          #1a1a18;
+      --ink-mid:      #3d3d38;
+      --ink-muted:    #7a7a72;
+      --accent:       #c8b560;
+    }
+
+    html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); }
+    body { display: flex; min-height: 100vh; }
+
+    .left {
+      width: 42%; min-height: 100vh; background: var(--green-deep);
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 48px 52px; position: relative; overflow: hidden;
+    }
+    .left::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 20% 80%, rgba(58,107,82,0.35) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, rgba(30,61,47,0.5) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .logo-row { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+    .logo-row img { width: 36px; height: 36px; object-fit: contain; }
+    .logo-row .brand-name { font-weight: 500; font-size: 15px; color: rgba(255,255,255,0.9); letter-spacing: 0.01em; }
+    .left-body { position: relative; z-index: 1; }
+    .left-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+    .left-headline { font-family: 'DM Serif Display', serif; font-size: clamp(32px, 3.2vw, 46px); line-height: 1.15; color: #fff; margin-bottom: 20px; }
+    .left-headline em { font-style: italic; color: rgba(255,255,255,0.75); }
+    .left-sub { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.55); line-height: 1.7; max-width: 300px; }
+    .left-stats { display: flex; gap: 36px; position: relative; z-index: 1; }
+    .stat-item .stat-val { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 0.02em; }
+    .stat-item .stat-label { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.4); margin-top: 2px; letter-spacing: 0.03em; }
+
+    .right { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 48px; background: var(--cream); }
+    .form-wrap { width: 100%; max-width: 360px; }
+    .form-heading { font-family: 'DM Serif Display', serif; font-size: 30px; font-weight: 400; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.01em; }
+    .form-sub { font-size: 14px; color: var(--ink-muted); font-weight: 300; line-height: 1.6; margin-bottom: 36px; }
+
+    .method-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--cream-dark); border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 20px; padding: 5px 12px 5px 8px;
+      font-size: 12px; font-weight: 500; color: var(--green-mid); margin-bottom: 28px;
+    }
+    .method-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-light); }
+
+    .otp-label { font-size: 12px; font-weight: 500; color: var(--ink-mid); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; display: block; }
+    .otp-input {
+      width: 100%; padding: 18px 20px; background: #fff;
+      border: 1.5px solid var(--cream-dark); border-radius: 6px;
+      font-family: 'Inter', sans-serif; font-size: 28px; font-weight: 300;
+      letter-spacing: 14px; text-align: center; color: var(--ink);
+      transition: border-color 0.2s, box-shadow 0.2s; outline: none; margin-bottom: 8px;
+    }
+    .otp-input:focus { border-color: var(--green-light); box-shadow: 0 0 0 3px rgba(42,82,64,0.08); }
+    .otp-hint { font-size: 12px; color: var(--ink-muted); margin-bottom: 28px; font-weight: 300; }
+
+    #verify-msg { font-size: 13px; min-height: 18px; margin-bottom: 20px; font-weight: 400; line-height: 1.5; }
+
+    .btn-primary {
+      width: 100%; padding: 15px; background: var(--green-deep); color: #fff;
+      border: none; border-radius: 6px; font-family: 'Inter', sans-serif;
+      font-size: 14px; font-weight: 500; letter-spacing: 0.04em; cursor: pointer;
+      transition: background 0.2s, transform 0.1s; margin-bottom: 20px;
+    }
+    .btn-primary:hover { background: var(--green-mid); }
+    .btn-primary:active { transform: scale(0.99); }
+
+    .secondary-row { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .resend-btn { font-size: 13px; color: var(--ink-muted); background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 400; transition: color 0.2s; padding: 0; }
+    .resend-btn:hover { color: var(--green-mid); }
+    .back-link { font-size: 13px; color: var(--ink-muted); text-decoration: none; display: flex; align-items: center; gap: 5px; transition: color 0.2s; font-weight: 400; }
+    .back-link:hover { color: var(--green-mid); }
+    .divider { width: 32px; height: 1px; background: var(--cream-dark); margin: 4px 0; }
+
+    @media (max-width: 680px) { .left { display: none; } .right { padding: 40px 24px; } }
+  </style>
+</head>
+<body>
+
+  <div class="left">
+    <div class="logo-row">
+      <img src="/assets/eusol_theme/images/logo.png" alt="Eusol Organics" onerror="this.style.display='none'" />
+      <span class="brand-name">Eusol Organics</span>
+    </div>
+    <div class="left-body">
+      <p class="left-eyebrow">Security Check</p>
+      <h1 class="left-headline">One step<br/>to keep you <em>safe.</em></h1>
+      <p class="left-sub">We verify every login to protect your workspace and your team's data.</p>
+    </div>
+    <div class="left-stats">
+      <div class="stat-item"><div class="stat-val">2FA</div><div class="stat-label">Protected</div></div>
+      <div class="stat-item"><div class="stat-val">GHS</div><div class="stat-label">Local currency</div></div>
+      <div class="stat-item"><div class="stat-val">Ghana</div><div class="stat-label">Based in</div></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="form-wrap">
+      <h2 class="form-heading">Verify your identity</h2>
+      <p class="form-sub" id="otp-subtitle">Enter the code to complete signing in.</p>
+      <div class="method-pill"><span class="dot"></span><span id="method-label">Authenticator app</span></div>
+      <label class="otp-label" for="otp">Verification code</label>
+      <input class="otp-input" type="text" id="otp" maxlength="6" placeholder="——————"
+             inputmode="numeric" autocomplete="one-time-code" autofocus />
+      <p class="otp-hint" id="otp-hint">Enter the 6-digit code from your authenticator app.</p>
+      <p id="verify-msg"></p>
+      <button class="btn-primary" onclick="doVerify()">Verify &amp; sign in</button>
+      <div class="secondary-row">
+        <button class="resend-btn" id="resend-btn" style="display:none" onclick="resendOTP()">Didn't receive a code? Resend</button>
+        <div class="divider"></div>
+        <a class="back-link" href="/signin">← Back to sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const usr    = sessionStorage.getItem('2fa_usr')    || '';
+    const method = sessionStorage.getItem('2fa_method') || 'OTP App';
+    const prompt = sessionStorage.getItem('2fa_prompt') || '';
+    const tmpId  = sessionStorage.getItem('2fa_tmp_id') || '';
+
+    if (!usr) window.location.href = '/signin';
+
+    const methodLabel = document.getElementById('method-label');
+    const subtitle    = document.getElementById('otp-subtitle');
+    const hint        = document.getElementById('otp-hint');
+    const resendBtn   = document.getElementById('resend-btn');
+
+    if (method === 'Email') {
+      methodLabel.textContent = 'Email code';
+      subtitle.textContent    = prompt || 'A 6-digit code has been sent to your email address.';
+      hint.textContent        = 'Check your inbox — the code expires in 10 minutes.';
+      resendBtn.style.display = 'block';
+    } else if (method === 'SMS') {
+      methodLabel.textContent = 'SMS code';
+      subtitle.textContent    = prompt || 'A 6-digit code has been sent to your phone.';
+      hint.textContent        = 'Check your messages — the code expires in 10 minutes.';
+      resendBtn.style.display = 'block';
+    } else {
+      methodLabel.textContent = 'Authenticator app';
+      subtitle.textContent    = 'Open your authenticator app and enter the current 6-digit code.';
+      hint.textContent        = 'Works with Google Authenticator, Authy, and compatible apps.';
+    }
+
+    document.getElementById('otp').addEventListener('input', function () {
+      this.value = this.value.replace(/\D/g, '').slice(0, 6);
+      if (this.value.length === 6) doVerify();
+    });
+
+    async function doVerify() {
+      const otp   = document.getElementById('otp').value.trim();
+      const msgEl = document.getElementById('verify-msg');
+      if (otp.length < 6) { msgEl.style.color = '#c0392b'; msgEl.textContent = 'Please enter the full 6-digit code.'; return; }
+      msgEl.style.color = '#7a7a72'; msgEl.textContent = 'Verifying…';
+      document.querySelector('.btn-primary').disabled = true;
+      try {
+        const res  = await fetch('/api/method/frappe.two_factor.confirm_otp', {
+          method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ usr, otp, tmp_id: tmpId })
+        });
+        const data = await res.json();
+        if (data.message === 'Logged In' || (res.status === 200 && !data.exc)) {
+          ['2fa_usr','2fa_method','2fa_prompt','2fa_tmp_id'].forEach(k => sessionStorage.removeItem(k));
+          window.location.href = '/home';
+        } else {
+          msgEl.style.color = '#c0392b'; msgEl.textContent = data.message || 'Invalid code. Please try again.';
+          document.getElementById('otp').value = ''; document.getElementById('otp').focus();
+          document.querySelector('.btn-primary').disabled = false;
+        }
+      } catch {
+        msgEl.style.color = '#c0392b'; msgEl.textContent = 'Network error. Please try again.';
+        document.querySelector('.btn-primary').disabled = false;
+      }
+    }
+
+    async function resendOTP() {
+      const msgEl = document.getElementById('verify-msg');
+      resendBtn.disabled = true; msgEl.style.color = '#7a7a72'; msgEl.textContent = 'Resending code…';
+      try {
+        await fetch('/api/method/frappe.two_factor.send_token_via_email_or_sms', {
+          method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ usr })
+        });
+        msgEl.style.color = '#2a5240';
+        msgEl.textContent = 'Code resent. Check your ' + (method === 'SMS' ? 'phone' : 'email') + '.';
+      } catch {
+        msgEl.style.color = '#c0392b'; msgEl.textContent = 'Could not resend. Try signing in again.';
+      }
+      setTimeout(() => { resendBtn.disabled = false; }, 30000);
+    }
+  </script>
+</body>
+</html>
