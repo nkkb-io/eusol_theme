@@ -21,6 +21,174 @@ def get_context(context):
     # Map role profile to dashboard config
     context.dashboard = get_dashboard_for_role(role_profile)
 
+    # Live stats per role
+    context.stats = get_stats_for_role(role_profile)
+
+    # Quick actions per role
+    context.quick_actions = get_quick_actions_for_role(role_profile)
+
+    # Recent documents
+    context.recent_docs = get_recent_docs()
+
+    # Unread notifications count
+    context.notification_count = get_notification_count()
+
+
+def get_notification_count():
+    try:
+        count = frappe.db.count("Notification Log", {
+            "for_user": frappe.session.user,
+            "read": 0
+        })
+        return count or 0
+    except Exception:
+        return 0
+
+
+def get_recent_docs():
+    try:
+        recent = frappe.get_list(
+            "Access Log",
+            filters={"user": frappe.session.user},
+            fields=["ref_doctype", "refdoctype", "name", "creation"],
+            order_by="creation desc",
+            limit=5,
+            ignore_permissions=True
+        )
+        return recent
+    except Exception:
+        pass
+
+    # Fallback: use desktop icons recently accessed
+    try:
+        recent = frappe.db.sql("""
+            SELECT reference_doctype as doctype, reference_name as name, creation
+            FROM `tabActivity Log`
+            WHERE user = %s AND reference_doctype IS NOT NULL
+            ORDER BY creation DESC
+            LIMIT 5
+        """, frappe.session.user, as_dict=True)
+        return recent or []
+    except Exception:
+        return []
+
+
+def get_stats_for_role(role_profile):
+    stats = []
+    try:
+        if role_profile in ["CEO", "Operations Manager", "Sales Manager"]:
+            today_sales = frappe.db.sql("""
+                SELECT IFNULL(SUM(grand_total), 0) as val
+                FROM `tabSales Invoice`
+                WHERE docstatus=1 AND DATE(posting_date)=CURDATE()
+            """, as_dict=True)
+            open_orders = frappe.db.count("Sales Order", {"status": ["in", ["Draft", "To Deliver and Bill", "To Bill"]]})
+            customers = frappe.db.count("Customer", {"disabled": 0})
+            employees = frappe.db.count("Employee", {"status": "Active"})
+            stats = [
+                {"label": "Today's Sales", "value": "GHS {:,.0f}".format(today_sales[0].val if today_sales else 0), "icon": "📈"},
+                {"label": "Open Orders", "value": str(open_orders), "icon": "🛒"},
+                {"label": "Customers", "value": str(customers), "icon": "👥"},
+                {"label": "Active Staff", "value": str(employees), "icon": "👤"},
+            ]
+
+        elif role_profile in ["Accounts"]:
+            receivable = frappe.db.sql("""
+                SELECT IFNULL(SUM(outstanding_amount), 0) as val
+                FROM `tabSales Invoice` WHERE docstatus=1 AND outstanding_amount > 0
+            """, as_dict=True)
+            payable = frappe.db.sql("""
+                SELECT IFNULL(SUM(outstanding_amount), 0) as val
+                FROM `tabPurchase Invoice` WHERE docstatus=1 AND outstanding_amount > 0
+            """, as_dict=True)
+            overdue = frappe.db.count("Sales Invoice", {"docstatus": 1, "outstanding_amount": [">", 0], "due_date": ["<", frappe.utils.today()]})
+            stats = [
+                {"label": "Receivable", "value": "GHS {:,.0f}".format(receivable[0].val if receivable else 0), "icon": "💰"},
+                {"label": "Payable", "value": "GHS {:,.0f}".format(payable[0].val if payable else 0), "icon": "💸"},
+                {"label": "Overdue Invoices", "value": str(overdue), "icon": "⚠️"},
+            ]
+
+        elif role_profile in ["Sales", "Sales Executive"]:
+            my_orders = frappe.db.count("Sales Order", {"status": ["in", ["Draft", "To Deliver and Bill"]]})
+            my_invoices = frappe.db.count("Sales Invoice", {"docstatus": 1, "outstanding_amount": [">", 0]})
+            stats = [
+                {"label": "Open Orders", "value": str(my_orders), "icon": "🛒"},
+                {"label": "Unpaid Invoices", "value": str(my_invoices), "icon": "🧾"},
+            ]
+
+        elif role_profile in ["Inventory", "Store Keeper", "Warehouse"]:
+            total_items = frappe.db.count("Item", {"disabled": 0})
+            pending_receipts = frappe.db.count("Purchase Receipt", {"docstatus": 0})
+            pending_delivery = frappe.db.count("Delivery Note", {"docstatus": 0})
+            stats = [
+                {"label": "Total Items", "value": str(total_items), "icon": "🏷️"},
+                {"label": "Pending Receipts", "value": str(pending_receipts), "icon": "📥"},
+                {"label": "Pending Deliveries", "value": str(pending_delivery), "icon": "📤"},
+            ]
+
+        elif role_profile in ["HR", "HR Assistant"]:
+            employees = frappe.db.count("Employee", {"status": "Active"})
+            pending_leave = frappe.db.count("Leave Application", {"status": "Open"})
+            stats = [
+                {"label": "Active Employees", "value": str(employees), "icon": "👤"},
+                {"label": "Pending Leave", "value": str(pending_leave), "icon": "🗓️"},
+            ]
+
+        elif role_profile in ["Manufacturing", "Production Manager", "Production Worker"]:
+            open_wo = frappe.db.count("Work Order", {"status": ["in", ["Draft", "Not Started", "In Process"]]})
+            pending_jobs = frappe.db.count("Job Card", {"status": ["in", ["Open", "Work In Progress"]]})
+            stats = [
+                {"label": "Open Work Orders", "value": str(open_wo), "icon": "🏭"},
+                {"label": "Pending Job Cards", "value": str(pending_jobs), "icon": "🔄"},
+            ]
+
+        elif role_profile in ["Purchase", "Purchasing Officer"]:
+            open_po = frappe.db.count("Purchase Order", {"status": ["in", ["Draft", "To Receive and Bill"]]})
+            pending_receipts = frappe.db.count("Purchase Receipt", {"docstatus": 0})
+            stats = [
+                {"label": "Open PO", "value": str(open_po), "icon": "🛒"},
+                {"label": "Pending Receipts", "value": str(pending_receipts), "icon": "📥"},
+            ]
+
+        elif role_profile == "Point of Sales":
+            today_pos = frappe.db.sql("""
+                SELECT IFNULL(SUM(grand_total), 0) as val
+                FROM `tabPOS Invoice`
+                WHERE docstatus=1 AND DATE(posting_date)=CURDATE()
+            """, as_dict=True)
+            stats = [
+                {"label": "Today's POS Sales", "value": "GHS {:,.0f}".format(today_pos[0].val if today_pos else 0), "icon": "🖥️"},
+            ]
+
+    except Exception:
+        pass
+
+    return stats
+
+
+def get_quick_actions_for_role(role_profile):
+    actions_map = {
+        "CEO":               [{"label": "New Sales Order", "url": "/app/sales-order/new-sales-order-1", "style": "primary"}, {"label": "View Reports", "url": "/app/query-report", "style": "secondary"}],
+        "Accounts":          [{"label": "New Payment Entry", "url": "/app/payment-entry/new-payment-entry-1", "style": "primary"}, {"label": "New Invoice", "url": "/app/sales-invoice/new-sales-invoice-1", "style": "secondary"}],
+        "HR":                [{"label": "New Employee", "url": "/app/employee/new-employee-1", "style": "primary"}, {"label": "Process Payroll", "url": "/app/payroll-entry/new-payroll-entry-1", "style": "secondary"}],
+        "HR Assistant":      [{"label": "New Leave Application", "url": "/app/leave-application/new-leave-application-1", "style": "primary"}, {"label": "Mark Attendance", "url": "/app/attendance/new-attendance-1", "style": "secondary"}],
+        "Inventory":         [{"label": "New Stock Entry", "url": "/app/stock-entry/new-stock-entry-1", "style": "primary"}, {"label": "Stock Balance", "url": "/app/stock-balance", "style": "secondary"}],
+        "Manufacturing":     [{"label": "New Work Order", "url": "/app/work-order/new-work-order-1", "style": "primary"}, {"label": "New BOM", "url": "/app/bom/new-bom-1", "style": "secondary"}],
+        "Operations Manager":[{"label": "New Sales Order", "url": "/app/sales-order/new-sales-order-1", "style": "primary"}, {"label": "Stock Balance", "url": "/app/stock-balance", "style": "secondary"}],
+        "Point of Sales":    [{"label": "Open POS", "url": "/app/point-of-sale", "style": "primary"}],
+        "Production Manager":[{"label": "New Work Order", "url": "/app/work-order/new-work-order-1", "style": "primary"}, {"label": "Production Plan", "url": "/app/production-plan/new-production-plan-1", "style": "secondary"}],
+        "Production Worker": [{"label": "My Job Cards", "url": "/app/job-card", "style": "primary"}],
+        "Purchase":          [{"label": "New Purchase Order", "url": "/app/purchase-order/new-purchase-order-1", "style": "primary"}, {"label": "Material Request", "url": "/app/material-request/new-material-request-1", "style": "secondary"}],
+        "Purchasing Officer":[{"label": "New Purchase Order", "url": "/app/purchase-order/new-purchase-order-1", "style": "primary"}, {"label": "Material Request", "url": "/app/material-request/new-material-request-1", "style": "secondary"}],
+        "Sales":             [{"label": "New Quotation", "url": "/app/quotation/new-quotation-1", "style": "primary"}, {"label": "New Customer", "url": "/app/customer/new-customer-1", "style": "secondary"}],
+        "Sales Executive":   [{"label": "New Quotation", "url": "/app/quotation/new-quotation-1", "style": "primary"}, {"label": "New Lead", "url": "/app/crm-lead/new-crm-lead-1", "style": "secondary"}],
+        "Sales Manager":     [{"label": "Sales Analytics", "url": "/app/sales-analytics", "style": "primary"}, {"label": "New Sales Order", "url": "/app/sales-order/new-sales-order-1", "style": "secondary"}],
+        "Store Keeper":      [{"label": "New Stock Entry", "url": "/app/stock-entry/new-stock-entry-1", "style": "primary"}, {"label": "Stock Balance", "url": "/app/stock-balance", "style": "secondary"}],
+        "System Administrator": [{"label": "Manage Users", "url": "/app/user", "style": "primary"}, {"label": "System Settings", "url": "/app/system-settings", "style": "secondary"}],
+        "Warehouse":         [{"label": "New Stock Entry", "url": "/app/stock-entry/new-stock-entry-1", "style": "primary"}, {"label": "Delivery Note", "url": "/app/delivery-note/new-delivery-note-1", "style": "secondary"}],
+    }
+    return actions_map.get(role_profile, [{"label": "Go to Desk", "url": "/app", "style": "primary"}])
+
 
 def get_dashboard_for_role(role_profile):
     dashboards = {
@@ -503,7 +671,6 @@ def get_dashboard_for_role(role_profile):
         },
     }
 
-    # Default fallback for unmapped roles
     default = {
         "title": "Welcome",
         "subtitle": "Eusol Organics Business Portal",
