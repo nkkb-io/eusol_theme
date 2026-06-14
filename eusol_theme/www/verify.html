@@ -4,210 +4,255 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Verify Identity | Eusol Organics</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { height: 100%; font-family: 'DM Sans', sans-serif; }
 
-    :root {
-      --green-deep:   #1e3d2f;
-      --green-mid:    #2a5240;
-      --green-light:  #3a6b52;
-      --cream:        #f5f0e8;
-      --cream-dark:   #ede7d9;
-      --ink:          #1a1a18;
-      --ink-mid:      #3d3d38;
-      --ink-muted:    #7a7a72;
-      --accent:       #c8b560;
-    }
+    .verify-wrap { display: flex; min-height: 100vh; }
 
-    html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); }
-    body { display: flex; min-height: 100vh; }
-
-    .left {
-      width: 42%; min-height: 100vh; background: var(--green-deep);
+    /* ── LEFT PANEL ── */
+    .verify-left {
+      width: 42%; min-height: 100vh; background: #1b3a2d;
       display: flex; flex-direction: column; justify-content: space-between;
-      padding: 48px 52px; position: relative; overflow: hidden;
+      padding: 3rem; position: relative; overflow: hidden;
     }
-    .left::before {
+    .verify-left::before {
       content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 20% 80%, rgba(58,107,82,0.35) 0%, transparent 60%),
-                  radial-gradient(ellipse at 80% 20%, rgba(30,61,47,0.5) 0%, transparent 50%);
+      background: radial-gradient(circle at 10% 90%, rgba(90,138,106,.3) 0%, transparent 45%),
+                  radial-gradient(circle at 90% 10%, rgba(45,90,61,.4) 0%, transparent 40%);
       pointer-events: none;
     }
-    .logo-row { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
-    .logo-row img { width: 36px; height: 36px; object-fit: contain; }
-    .logo-row .brand-name { font-weight: 500; font-size: 15px; color: rgba(255,255,255,0.9); letter-spacing: 0.01em; }
-    .left-body { position: relative; z-index: 1; }
-    .left-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
-    .left-headline { font-family: 'DM Serif Display', serif; font-size: clamp(32px, 3.2vw, 46px); line-height: 1.15; color: #fff; margin-bottom: 20px; }
-    .left-headline em { font-style: italic; color: rgba(255,255,255,0.75); }
-    .left-sub { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.55); line-height: 1.7; max-width: 300px; }
-    .left-stats { display: flex; gap: 36px; position: relative; z-index: 1; }
-    .stat-item .stat-val { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 0.02em; }
-    .stat-item .stat-label { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.4); margin-top: 2px; letter-spacing: 0.03em; }
+    .verify-brand { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+    .verify-logo { width: 42px; height: 42px; object-fit: contain; }
+    .verify-brand-name { color: #fff; font-size: 17px; font-weight: 600; font-family: 'Playfair Display', serif; }
+    .verify-hero { position: relative; z-index: 1; }
+    .verify-eyebrow { color: #c9a84c; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 1rem; }
+    .verify-heading { color: #fff; font-size: 38px; line-height: 1.2; font-weight: 400; margin-bottom: 1rem; font-family: 'Playfair Display', serif; }
+    .verify-heading em { color: #a8c5b0; font-style: italic; }
+    .verify-body-text { color: rgba(168,197,176,.8); font-size: 14px; line-height: 1.7; font-weight: 300; }
+    .verify-stats { display: flex; gap: 2rem; padding-top: 2rem; border-top: 1px solid rgba(168,197,176,.15); position: relative; z-index: 1; }
+    .verify-stat { display: flex; flex-direction: column; gap: 2px; }
+    .verify-stat-num { color: #fff; font-size: 20px; font-weight: 600; }
+    .verify-stat-lbl { color: rgba(168,197,176,.6); font-size: 11px; }
 
-    .right { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 48px; background: var(--cream); }
-    .form-wrap { width: 100%; max-width: 360px; }
-    .form-heading { font-family: 'DM Serif Display', serif; font-size: 30px; font-weight: 400; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.01em; }
-    .form-sub { font-size: 14px; color: var(--ink-muted); font-weight: 300; line-height: 1.6; margin-bottom: 36px; }
+    /* ── RIGHT PANEL ── */
+    .verify-right { flex: 1; background: #fdfaf4; display: flex; align-items: center; justify-content: center; padding: 3rem; }
+    .verify-form-wrap { width: 100%; max-width: 380px; }
+    .verify-form-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: #1b3a2d; margin-bottom: 0.25rem; }
+    .verify-form-sub { color: #888; font-size: 13px; margin-bottom: 2rem; line-height: 1.6; }
 
-    .method-pill {
+    /* method badge */
+    .method-badge {
       display: inline-flex; align-items: center; gap: 6px;
-      background: var(--cream-dark); border: 1px solid rgba(0,0,0,0.08);
+      background: #f0ebe0; border: 1px solid rgba(27,58,45,.12);
       border-radius: 20px; padding: 5px 12px 5px 8px;
-      font-size: 12px; font-weight: 500; color: var(--green-mid); margin-bottom: 28px;
+      font-size: 12px; font-weight: 500; color: #1b3a2d; margin-bottom: 1.5rem;
     }
-    .method-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-light); }
+    .method-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #5a8a6a; }
 
-    .otp-label { font-size: 12px; font-weight: 500; color: var(--ink-mid); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; display: block; }
+    /* OTP input */
+    .otp-label { display: block; font-size: 12px; font-weight: 500; color: #3d3d38; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
     .otp-input {
       width: 100%; padding: 18px 20px; background: #fff;
-      border: 1.5px solid var(--cream-dark); border-radius: 6px;
-      font-family: 'Inter', sans-serif; font-size: 28px; font-weight: 300;
-      letter-spacing: 14px; text-align: center; color: var(--ink);
+      border: 1.5px solid rgba(27,58,45,.2); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 28px; font-weight: 300;
+      letter-spacing: 14px; text-align: center; color: #1b3a2d;
       transition: border-color 0.2s, box-shadow 0.2s; outline: none; margin-bottom: 8px;
     }
-    .otp-input:focus { border-color: var(--green-light); box-shadow: 0 0 0 3px rgba(42,82,64,0.08); }
-    .otp-hint { font-size: 12px; color: var(--ink-muted); margin-bottom: 28px; font-weight: 300; }
+    .otp-input:focus { border-color: #5a8a6a; box-shadow: 0 0 0 3px rgba(90,138,106,.1); }
+    .otp-hint { font-size: 12px; color: #888; margin-bottom: 1.5rem; font-weight: 300; }
 
-    #verify-msg { font-size: 13px; min-height: 18px; margin-bottom: 20px; font-weight: 400; line-height: 1.5; }
+    #verify-msg { font-size: 13px; min-height: 18px; text-align: center; margin-bottom: 1rem; font-weight: 400; line-height: 1.5; }
 
-    .btn-primary {
-      width: 100%; padding: 15px; background: var(--green-deep); color: #fff;
-      border: none; border-radius: 6px; font-family: 'Inter', sans-serif;
-      font-size: 14px; font-weight: 500; letter-spacing: 0.04em; cursor: pointer;
-      transition: background 0.2s, transform 0.1s; margin-bottom: 20px;
+    .btn-verify {
+      width: 100%; padding: 13px; background: #1b3a2d; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 500;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+      margin-bottom: 1rem;
     }
-    .btn-primary:hover { background: var(--green-mid); }
-    .btn-primary:active { transform: scale(0.99); }
+    .btn-verify:hover { background: #2d5a3d; }
+    .btn-verify:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    .secondary-row { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .resend-btn { font-size: 13px; color: var(--ink-muted); background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 400; transition: color 0.2s; padding: 0; }
-    .resend-btn:hover { color: var(--green-mid); }
-    .back-link { font-size: 13px; color: var(--ink-muted); text-decoration: none; display: flex; align-items: center; gap: 5px; transition: color 0.2s; font-weight: 400; }
-    .back-link:hover { color: var(--green-mid); }
-    .divider { width: 32px; height: 1px; background: var(--cream-dark); margin: 4px 0; }
+    .secondary-row { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .resend-btn { font-size: 13px; color: #888; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.2s; padding: 0; }
+    .resend-btn:hover { color: #1b3a2d; }
+    .back-link { font-size: 13px; color: #5a8a6a; text-decoration: none; transition: color 0.2s; }
+    .back-link:hover { text-decoration: underline; }
 
-    @media (max-width: 680px) { .left { display: none; } .right { padding: 40px 24px; } }
+    @media (max-width: 768px) { .verify-left { display: none; } .verify-right { padding: 2rem 1.5rem; } }
   </style>
 </head>
 <body>
 
-  <div class="left">
-    <div class="logo-row">
-      <img src="/assets/eusol_theme/images/logo.png" alt="Eusol Organics" onerror="this.style.display='none'" />
-      <span class="brand-name">Eusol Organics</span>
+<div class="verify-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="verify-left">
+    <div class="verify-brand">
+      <img src="/files/EUSOL--LOGO.png" alt="Eusol Organics" class="verify-logo" onerror="this.style.display='none'" />
+      <span class="verify-brand-name">Eusol Organics</span>
     </div>
-    <div class="left-body">
-      <p class="left-eyebrow">Security Check</p>
-      <h1 class="left-headline">One step<br/>to keep you <em>safe.</em></h1>
-      <p class="left-sub">We verify every login to protect your workspace and your team's data.</p>
+    <div class="verify-hero">
+      <p class="verify-eyebrow">Security Check</p>
+      <h1 class="verify-heading">One step<br/>to keep you <em>safe.</em></h1>
+      <p class="verify-body-text">We verify every login to protect your workspace and your team's data.</p>
     </div>
-    <div class="left-stats">
-      <div class="stat-item"><div class="stat-val">2FA</div><div class="stat-label">Protected</div></div>
-      <div class="stat-item"><div class="stat-val">GHS</div><div class="stat-label">Local currency</div></div>
-      <div class="stat-item"><div class="stat-val">Ghana</div><div class="stat-label">Based in</div></div>
-      <div class="stat-item"><div class="stat-val">COOKED BY</div><div class="stat-label">Nana Kwaku</div></div>
+    <div class="verify-stats">
+      <div class="verify-stat"><span class="verify-stat-num">2FA</span><span class="verify-stat-lbl">Protected</span></div>
+      <div class="verify-stat"><span class="verify-stat-num">GHS</span><span class="verify-stat-lbl">Local currency</span></div>
+      <div class="verify-stat"><span class="verify-stat-num">AUTHENTIC</span><span class="verify-stat-lbl">Based in Ghana</span></div>
     </div>
   </div>
 
-  <div class="right">
-    <div class="form-wrap">
-      <h2 class="form-heading">Verify your identity</h2>
-      <p class="form-sub" id="otp-subtitle">Enter the code to complete signing in.</p>
-      <div class="method-pill"><span class="dot"></span><span id="method-label">Authenticator app</span></div>
+  <!-- RIGHT PANEL -->
+  <div class="verify-right">
+    <div class="verify-form-wrap">
+      <h2 class="verify-form-title">Verify your identity</h2>
+      <p class="verify-form-sub" id="otp-subtitle">Enter the code to complete signing in.</p>
+
+      <div class="method-badge">
+        <span class="dot"></span>
+        <span id="method-label">Authenticator app</span>
+      </div>
+
       <label class="otp-label" for="otp">Verification code</label>
-      <input class="otp-input" type="text" id="otp" maxlength="6" placeholder="——————"
-             inputmode="numeric" autocomplete="one-time-code" autofocus />
+      <input class="otp-input" type="text" id="otp" maxlength="6"
+             placeholder="——————" inputmode="numeric" autocomplete="one-time-code" autofocus />
       <p class="otp-hint" id="otp-hint">Enter the 6-digit code from your authenticator app.</p>
+
       <p id="verify-msg"></p>
-      <button class="btn-primary" onclick="doVerify()">Verify &amp; sign in</button>
+
+      <button class="btn-verify" id="verify-btn" onclick="doVerify()">Verify &amp; sign in</button>
+
       <div class="secondary-row">
-        <button class="resend-btn" id="resend-btn" style="display:none" onclick="resendOTP()">Didn't receive a code? Resend</button>
-        <div class="divider"></div>
+        <button class="resend-btn" id="resend-btn" style="display:none" onclick="resendOTP()">
+          Didn't receive a code? Resend
+        </button>
         <a class="back-link" href="/signin">← Back to sign in</a>
       </div>
     </div>
   </div>
 
-  <script>
-    const usr    = sessionStorage.getItem('2fa_usr')    || '';
-    const method = sessionStorage.getItem('2fa_method') || 'OTP App';
-    const prompt = sessionStorage.getItem('2fa_prompt') || '';
-    const tmpId  = sessionStorage.getItem('2fa_tmp_id') || '';
+</div>
 
-    if (!usr) window.location.href = '/signin';
+<script>
+  var usr    = sessionStorage.getItem('2fa_usr')    || '';
+  var method = sessionStorage.getItem('2fa_method') || 'OTP App';
+  var prompt = sessionStorage.getItem('2fa_prompt') || '';
+  var tmpId  = sessionStorage.getItem('2fa_tmp_id') || '';
 
-    const methodLabel = document.getElementById('method-label');
-    const subtitle    = document.getElementById('otp-subtitle');
-    const hint        = document.getElementById('otp-hint');
-    const resendBtn   = document.getElementById('resend-btn');
+  // Guard — if no session, send back to login
+  if (!usr) window.location.href = '/signin';
 
-    if (method === 'Email') {
-      methodLabel.textContent = 'Email code';
-      subtitle.textContent    = prompt || 'A 6-digit code has been sent to your email address.';
-      hint.textContent        = 'Check your inbox — the code expires in 10 minutes.';
-      resendBtn.style.display = 'block';
-    } else if (method === 'SMS') {
-      methodLabel.textContent = 'SMS code';
-      subtitle.textContent    = prompt || 'A 6-digit code has been sent to your phone.';
-      hint.textContent        = 'Check your messages — the code expires in 10 minutes.';
-      resendBtn.style.display = 'block';
-    } else {
-      methodLabel.textContent = 'Authenticator app';
-      subtitle.textContent    = 'Open your authenticator app and enter the current 6-digit code.';
-      hint.textContent        = 'Works with Google Authenticator, Authy, and compatible apps.';
+  // Adapt UI to method
+  var methodLabel = document.getElementById('method-label');
+  var subtitle    = document.getElementById('otp-subtitle');
+  var hint        = document.getElementById('otp-hint');
+  var resendBtn   = document.getElementById('resend-btn');
+
+  if (method === 'Email') {
+    methodLabel.textContent = 'Email code';
+    subtitle.textContent    = prompt || 'A 6-digit code has been sent to your email address.';
+    hint.textContent        = 'Check your inbox — the code expires in 10 minutes.';
+    resendBtn.style.display = 'block';
+  } else if (method === 'SMS') {
+    methodLabel.textContent = 'SMS code';
+    subtitle.textContent    = prompt || 'A 6-digit code has been sent to your phone.';
+    hint.textContent        = 'Check your messages — the code expires in 10 minutes.';
+    resendBtn.style.display = 'block';
+  } else {
+    methodLabel.textContent = 'Authenticator app';
+    subtitle.textContent    = 'Open your authenticator app and enter the current 6-digit code.';
+    hint.textContent        = 'Works with Google Authenticator, Authy, and compatible apps.';
+  }
+
+  // Auto-submit on 6 digits
+  document.getElementById('otp').addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '').slice(0, 6);
+    if (this.value.length === 6) doVerify();
+  });
+
+  // Enter key
+  document.getElementById('otp').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); doVerify(); }
+  });
+
+  var _verifyInProgress = false;
+
+  async function doVerify() {
+    if (_verifyInProgress) return;
+
+    var otp   = document.getElementById('otp').value.trim();
+    var msgEl = document.getElementById('verify-msg');
+    var btn   = document.getElementById('verify-btn');
+
+    if (otp.length < 6) {
+      msgEl.style.color = '#c0392b';
+      msgEl.textContent = 'Please enter the full 6-digit code.';
+      return;
     }
 
-    document.getElementById('otp').addEventListener('input', function () {
-      this.value = this.value.replace(/\D/g, '').slice(0, 6);
-      if (this.value.length === 6) doVerify();
-    });
+    _verifyInProgress = true;
+    msgEl.style.color = '#888';
+    msgEl.textContent = 'Verifying…';
+    btn.disabled = true;
 
-    async function doVerify() {
-      const otp   = document.getElementById('otp').value.trim();
-      const msgEl = document.getElementById('verify-msg');
-      if (otp.length < 6) { msgEl.style.color = '#c0392b'; msgEl.textContent = 'Please enter the full 6-digit code.'; return; }
-      msgEl.style.color = '#7a7a72'; msgEl.textContent = 'Verifying…';
-      document.querySelector('.btn-primary').disabled = true;
-      try {
-        const res = await fetch('/api/method/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ usr, otp, tmp_id: tmpId })
+    try {
+      // POST back to /api/method/login with otp + tmp_id
+      // Frappe's login handler detects the otp param and runs confirm_otp_token internally
+      var res = await fetch('/api/method/login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:    new URLSearchParams({ usr: usr, otp: otp, tmp_id: tmpId })
+      });
+
+      var data = await res.json();
+
+      if (data.message === 'Logged In') {
+        // Clear session storage and redirect
+        ['2fa_usr','2fa_method','2fa_prompt','2fa_tmp_id'].forEach(function(k) {
+          sessionStorage.removeItem(k);
         });
-        const data = await res.json();
-        if (data.message === 'Logged In' || (res.status === 200 && !data.exc)) {
-          ['2fa_usr','2fa_method','2fa_prompt','2fa_tmp_id'].forEach(k => sessionStorage.removeItem(k));
-          window.location.href = '/home';
-        } else {
-          msgEl.style.color = '#c0392b'; msgEl.textContent = data.message || 'Invalid code. Please try again.';
-          document.getElementById('otp').value = ''; document.getElementById('otp').focus();
-          document.querySelector('.btn-primary').disabled = false;
-        }
-      } catch {
-        msgEl.style.color = '#c0392b'; msgEl.textContent = 'Network error. Please try again.';
-        document.querySelector('.btn-primary').disabled = false;
-      }
-    }
+        window.location.href = '/home';
 
-    async function resendOTP() {
-      const msgEl = document.getElementById('verify-msg');
-      resendBtn.disabled = true; msgEl.style.color = '#7a7a72'; msgEl.textContent = 'Resending code…';
-      try {
-        await fetch('/api/method/frappe.two_factor.send_token_via_email_or_sms', {
-          method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ usr })
-        });
-        msgEl.style.color = '#2a5240';
-        msgEl.textContent = 'Code resent. Check your ' + (method === 'SMS' ? 'phone' : 'email') + '.';
-      } catch {
-        msgEl.style.color = '#c0392b'; msgEl.textContent = 'Could not resend. Try signing in again.';
+      } else {
+        msgEl.style.color = '#c0392b';
+        msgEl.textContent = data.message || 'Invalid code. Please try again.';
+        document.getElementById('otp').value = '';
+        document.getElementById('otp').focus();
+        btn.disabled = false;
+        _verifyInProgress = false;
       }
-      setTimeout(() => { resendBtn.disabled = false; }, 30000);
+
+    } catch (err) {
+      msgEl.style.color = '#c0392b';
+      msgEl.textContent = 'Network error. Please try again.';
+      btn.disabled = false;
+      _verifyInProgress = false;
     }
-  </script>
+  }
+
+  async function resendOTP() {
+    var msgEl = document.getElementById('verify-msg');
+    resendBtn.disabled = true;
+    msgEl.style.color  = '#888';
+    msgEl.textContent  = 'Resending code…';
+    try {
+      await fetch('/api/method/frappe.core.doctype.user.user.reset_otp', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:    new URLSearchParams({ usr: usr })
+      });
+      msgEl.style.color = '#2d7a4f';
+      msgEl.textContent = 'Code resent. Check your ' + (method === 'SMS' ? 'phone' : 'email') + '.';
+    } catch {
+      msgEl.style.color = '#c0392b';
+      msgEl.textContent = 'Could not resend. Try signing in again.';
+    }
+    setTimeout(function() { resendBtn.disabled = false; }, 30000);
+  }
+</script>
+
 </body>
 </html>
