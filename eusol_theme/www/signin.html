@@ -43,7 +43,6 @@
           <a href="#" onclick="forgotPassword(); return false;" style="font-size:12px; color:#5a8a6a;">Forgot Password?</a>
         </div>
 
-        <!-- Inline status messages (replaces all alert() calls) -->
         <p id="login-msg" style="font-size:13px; min-height:18px; text-align:center; margin-bottom:0.75rem;"></p>
 
         <button id="login-btn" class="btn-login">Sign In</button>
@@ -99,8 +98,8 @@ function togglePassword() {
 
 function setMsg(text, color) {
   var el = document.getElementById('login-msg');
-  el.textContent  = text;
-  el.style.color  = color || '#888';
+  el.textContent = text;
+  el.style.color = color || '#888';
 }
 
 function forgotPassword() {
@@ -119,18 +118,25 @@ function forgotPassword() {
     setMsg('Password reset link sent to your inbox.', '#2d7a4f');
   })
   .catch(function() {
-    // Show success anyway — avoids user enumeration
     setMsg('Password reset link sent to your inbox.', '#2d7a4f');
   });
 }
 
+// ── Login with double-submission guard ──
+var _loginInProgress = false;
+
 async function doLogin() {
+  // Block if already in progress
+  if (_loginInProgress) return;
+  _loginInProgress = true;
+
   var email    = document.getElementById('login_email').value.trim();
   var password = document.getElementById('login_password').value;
   var btn      = document.getElementById('login-btn');
 
   if (!email || !password) {
     setMsg('Please enter your email and password.', '#c0392b');
+    _loginInProgress = false;
     return;
   }
 
@@ -148,11 +154,11 @@ async function doLogin() {
     var data = await res.json();
 
     if (data.message === 'Logged In') {
-      // ✅ No 2FA — go to role-based dashboard
+      // No 2FA — go straight to dashboard
       window.location.href = '/home';
 
     } else if (data.verification) {
-      // 🔐 2FA required — store session data and redirect to verify page
+      // 2FA required — store session data and go to verify page
       sessionStorage.setItem('2fa_usr',    email);
       sessionStorage.setItem('2fa_method', data.verification.method || 'OTP App');
       sessionStorage.setItem('2fa_prompt', data.verification.prompt || '');
@@ -161,23 +167,33 @@ async function doLogin() {
 
     } else {
       setMsg(data.message || 'Invalid email or password. Please try again.', '#c0392b');
-      btn.disabled    = false;
-      btn.textContent = 'Sign In';
+      btn.disabled     = false;
+      btn.textContent  = 'Sign In';
+      _loginInProgress = false;
     }
 
   } catch (err) {
     setMsg('Connection error. Please try again.', '#c0392b');
-    btn.disabled    = false;
-    btn.textContent = 'Sign In';
+    btn.disabled     = false;
+    btn.textContent  = 'Sign In';
+    _loginInProgress = false;
   }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  document.getElementById('login-btn').addEventListener('click', doLogin);
+  // Single click listener on button
+  document.getElementById('login-btn').addEventListener('click', function (e) {
+    e.preventDefault();
+    doLogin();
+  });
 
-  ['login_password', 'login_email'].forEach(function (id) {
-    document.getElementById(id).addEventListener('keypress', function (e) {
-      if (e.key === 'Enter') doLogin();
+  // Enter key on fields — prevent default to stop double fire
+  ['login_email', 'login_password'].forEach(function (id) {
+    document.getElementById(id).addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        doLogin();
+      }
     });
   });
 });
