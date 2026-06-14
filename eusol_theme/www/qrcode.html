@@ -8,10 +8,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body, html { height: 100%; font-family: 'DM Sans', sans-serif; }
-
     .qr-wrap { display: flex; min-height: 100vh; }
-
-    /* ── LEFT PANEL ── */
     .qr-left {
       width: 42%; min-height: 100vh; background: #1b3a2d;
       display: flex; flex-direction: column; justify-content: space-between;
@@ -36,60 +33,33 @@
     .qr-stat { display: flex; flex-direction: column; gap: 2px; }
     .qr-stat-num { color: #fff; font-size: 20px; font-weight: 600; }
     .qr-stat-lbl { color: rgba(168,197,176,.6); font-size: 11px; }
-
-    /* ── RIGHT PANEL ── */
     .qr-right { flex: 1; background: #fdfaf4; display: flex; align-items: center; justify-content: center; padding: 3rem; }
     .qr-form-wrap { width: 100%; max-width: 420px; }
     .qr-form-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: #1b3a2d; margin-bottom: 0.25rem; }
     .qr-form-sub { color: #888; font-size: 13px; margin-bottom: 2rem; }
     .qr-greeting { font-size: 14px; color: #1b3a2d; font-weight: 500; margin-bottom: 1.5rem; }
-
-    /* steps */
     .qr-steps { display: flex; flex-direction: column; gap: 14px; margin-bottom: 2rem; }
     .qr-step { display: flex; align-items: flex-start; gap: 14px; }
-    .step-num {
-      width: 28px; height: 28px; border-radius: 50%; background: #1b3a2d;
-      color: #fff; font-size: 13px; font-weight: 600;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; margin-top: 1px;
-    }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; background: #1b3a2d; color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
     .step-text { font-size: 14px; color: #3d3d38; line-height: 1.5; font-weight: 300; padding-top: 4px; }
-
-    /* QR code box */
-    .qr-code-box {
-      background: #fff; border: 1px solid rgba(27,58,45,.15); border-radius: 12px;
-      padding: 20px; display: flex; align-items: center; justify-content: center;
-      margin-bottom: 1.5rem; width: 100%;
-    }
+    .qr-code-box { background: #fff; border: 1px solid rgba(27,58,45,.15); border-radius: 12px; padding: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; width: 100%; }
     .qr-code-box img { width: 180px; height: 180px; object-fit: contain; }
-
-    /* apps note */
-    .qr-apps-note {
-      background: #f5f0e4; border-radius: 8px; padding: 14px 16px;
-      font-size: 12px; color: #5a6a62; line-height: 1.6; margin-bottom: 2rem;
-    }
+    .qr-expired { color: #c0392b; font-size: 13px; text-align: center; padding: 2rem 0; }
+    .qr-expired a { color: #1b3a2d; font-weight: 500; }
+    .qr-apps-note { background: #f5f0e4; border-radius: 8px; padding: 14px 16px; font-size: 12px; color: #5a6a62; line-height: 1.6; margin-bottom: 2rem; }
     .qr-apps-note strong { display: block; color: #1b3a2d; margin-bottom: 4px; font-weight: 500; }
-
-    .btn-back {
-      width: 100%; padding: 13px; background: #1b3a2d; color: #fff;
-      border: none; border-radius: 8px; font-size: 14px; font-weight: 500;
-      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
-      text-align: center; text-decoration: none; display: block;
-    }
+    .btn-back { width: 100%; padding: 13px; background: #1b3a2d; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; text-align: center; text-decoration: none; display: block; }
     .btn-back:hover { background: #2d5a3d; color: #fff; }
-
     @media (max-width: 768px) { .qr-left { display: none; } .qr-right { padding: 2rem 1.5rem; } }
   </style>
 </head>
 <body>
-
 <div class="qr-wrap">
 
   <!-- LEFT PANEL -->
   <div class="qr-left">
     <div class="qr-brand">
-      <img src="/files/EUSOL--LOGO.png" alt="Eusol Organics" class="qr-logo"
-           onerror="this.style.display='none'" />
+      <img src="/files/EUSOL--LOGO.png" alt="Eusol Organics" class="qr-logo" onerror="this.style.display='none'" />
       <span class="qr-brand-name">Eusol Organics</span>
     </div>
     <div class="qr-hero">
@@ -110,7 +80,10 @@
     <div class="qr-form-wrap">
       <h2 class="qr-form-title">Scan QR Code</h2>
       <p class="qr-form-sub">Set up your authenticator app to complete login</p>
+
+      {% if qr_code_user %}
       <p class="qr-greeting">Hi {{ qr_code_user.first_name }}, follow the steps below:</p>
+      {% endif %}
 
       <div class="qr-steps">
         <div class="qr-step">
@@ -128,19 +101,24 @@
       </div>
 
       <div class="qr-code-box">
-        <img src="data:image/svg+xml;base64,{{ qrcode_svg }}" alt="QR Code" />
+        {% if qrcode_svg %}
+          <img src="data:image/svg+xml;base64,{{ qrcode_svg }}" alt="QR Code" />
+        {% else %}
+          <p class="qr-expired">QR code has expired or is invalid.<br/>Please <a href="/signin">sign in again</a> to get a new one.</p>
+        {% endif %}
       </div>
 
+      {% if qrcode_svg %}
       <div class="qr-apps-note">
         <strong>Compatible authenticator apps</strong>
         Google Authenticator, Authy, Microsoft Authenticator, LastPass Authenticator, FreeOTP, Duo Mobile.
       </div>
+      {% endif %}
 
       <a href="/signin" class="btn-back">← Back to sign in</a>
     </div>
   </div>
 
 </div>
-
 </body>
 </html>
