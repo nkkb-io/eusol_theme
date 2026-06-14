@@ -1,299 +1,96 @@
-{% extends "templates/web.html" %}
-
-{% block title %}{{ title or _("Error") }} | Eusol Organics{% endblock %}
-{% block navbar %}{% endblock %}
-{% block footer %}{% endblock %}
-
-{% block head_include %}
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  .navbar, .web-header, footer.web-footer { display: none !important; }
-  body { background: #fdfaf4 !important; font-family: 'DM Sans', sans-serif; }
-
-  .error-wrap {
-    display: flex;
-    min-height: 100vh;
-  }
-
-  /* ── LEFT PANEL ── */
-  .error-left {
-    width: 42%;
-    min-height: 100vh;
-    background: #1b3a2d;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 3rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .error-left::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 10% 90%, rgba(90,138,106,.3) 0%, transparent 45%),
-      radial-gradient(circle at 90% 10%, rgba(45,90,61,.4) 0%, transparent 40%);
-    pointer-events: none;
-  }
-
-  .error-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .error-logo {
-    width: 42px;
-    height: 42px;
-    object-fit: contain;
-  }
-
-  .error-brand-name {
-    color: #fff;
-    font-size: 17px;
-    font-weight: 600;
-    font-family: 'Playfair Display', serif;
-  }
-
-  .error-hero {
-    position: relative;
-    z-index: 1;
-  }
-
-  .error-eyebrow {
-    color: #c9a84c;
-    font-size: 11px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-
-  .error-heading {
-    color: #fff;
-    font-size: 38px;
-    line-height: 1.2;
-    font-weight: 400;
-    margin-bottom: 1rem;
-    font-family: 'Playfair Display', serif;
-  }
-
-  .error-heading em {
-    color: #a8c5b0;
-    font-style: italic;
-  }
-
-  .error-body-text {
-    color: rgba(168,197,176,.8);
-    font-size: 14px;
-    line-height: 1.7;
-    font-weight: 300;
-  }
-
-  .error-stats {
-    display: flex;
-    gap: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(168,197,176,.15);
-    position: relative;
-    z-index: 1;
-  }
-
-  .error-stat { display: flex; flex-direction: column; gap: 2px; }
-  .error-stat-num { color: #fff; font-size: 20px; font-weight: 600; }
-  .error-stat-lbl { color: rgba(168,197,176,.6); font-size: 11px; }
-
-  /* ── RIGHT PANEL ── */
-  .error-right {
-    flex: 1;
-    background: #fdfaf4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-  }
-
-  .error-content {
-    width: 100%;
-    max-width: 380px;
-    text-align: center;
-  }
-
-  /* icon */
-  .error-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: #f5f0e4;
-    border: 2px solid rgba(27,58,45,.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 26px;
-    color: #1b3a2d;
-  }
-
-  .error-code {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #c9a84c;
-    margin-bottom: 0.5rem;
-  }
-
-  .error-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 600;
-    color: #1b3a2d;
-    margin-bottom: 0.75rem;
-  }
-
-  .error-message {
-    font-size: 14px;
-    color: #666;
-    line-height: 1.7;
-    font-weight: 300;
-    margin-bottom: 2rem;
-  }
-
-  .btn-home {
-    display: block;
-    width: 100%;
-    padding: 13px;
-    background: #1b3a2d;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    transition: background 0.2s;
-    text-decoration: none;
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-
-  .btn-home:hover { background: #2d5a3d; color: #fff; }
-
-  .back-link {
-    display: block;
-    font-size: 13px;
-    color: #5a8a6a;
-    text-decoration: none;
-    margin-top: 0.5rem;
-  }
-
-  .back-link:hover { text-decoration: underline; }
-
-  /* collapsible error detail */
-  .error-detail-toggle {
-    font-size: 12px;
-    color: #aaa;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    margin-bottom: 1rem;
-    text-decoration: underline;
-  }
-
-  .error-detail-toggle:hover { color: #666; }
-
-  .error-detail-box {
-    display: none;
-    background: #f0ebe0;
-    border: 1px solid rgba(27,58,45,.1);
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: left;
-    font-size: 12px;
-    color: #555;
-    line-height: 1.6;
-    max-height: 200px;
-    overflow: auto;
-    margin-bottom: 1.5rem;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  @media (max-width: 768px) {
-    .error-left { display: none; }
-    .error-right { padding: 2rem 1.5rem; }
-  }
-</style>
-{% endblock %}
-
-{% block page_content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ title or "Error" }} | Eusol Organics</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { height: 100%; font-family: 'DM Sans', sans-serif; }
+    .error-wrap { display: flex; min-height: 100vh; }
+    .error-left {
+      width: 42%; min-height: 100vh; background: #1b3a2d;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 3rem; position: relative; overflow: hidden;
+    }
+    .error-left::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 10% 90%, rgba(90,138,106,.3) 0%, transparent 45%),
+                  radial-gradient(circle at 90% 10%, rgba(45,90,61,.4) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .error-brand { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+    .error-logo { width: 42px; height: 42px; object-fit: contain; }
+    .error-brand-name { color: #fff; font-size: 17px; font-weight: 600; font-family: 'Playfair Display', serif; }
+    .error-hero { position: relative; z-index: 1; }
+    .error-eyebrow { color: #c9a84c; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 1rem; }
+    .error-heading { color: #fff; font-size: 38px; line-height: 1.2; font-weight: 400; margin-bottom: 1rem; font-family: 'Playfair Display', serif; }
+    .error-heading em { color: #a8c5b0; font-style: italic; }
+    .error-body-text { color: rgba(168,197,176,.8); font-size: 14px; line-height: 1.7; font-weight: 300; }
+    .error-stats { display: flex; gap: 2rem; padding-top: 2rem; border-top: 1px solid rgba(168,197,176,.15); position: relative; z-index: 1; }
+    .error-stat { display: flex; flex-direction: column; gap: 2px; }
+    .error-stat-num { color: #fff; font-size: 20px; font-weight: 600; }
+    .error-stat-lbl { color: rgba(168,197,176,.6); font-size: 11px; }
+    .error-right { flex: 1; background: #fdfaf4; display: flex; align-items: center; justify-content: center; padding: 3rem; }
+    .error-content { width: 100%; max-width: 380px; text-align: center; }
+    .error-icon { width: 64px; height: 64px; border-radius: 50%; background: #f5f0e4; border: 2px solid rgba(27,58,45,.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 26px; color: #1b3a2d; }
+    .error-code { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #c9a84c; margin-bottom: 0.5rem; }
+    .error-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: #1b3a2d; margin-bottom: 0.75rem; }
+    .error-message { font-size: 14px; color: #666; line-height: 1.7; font-weight: 300; margin-bottom: 2rem; }
+    .btn-home { display: block; width: 100%; padding: 13px; background: #1b3a2d; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; text-decoration: none; text-align: center; margin-bottom: 1rem; }
+    .btn-home:hover { background: #2d5a3d; color: #fff; }
+    .back-link { display: block; font-size: 13px; color: #5a8a6a; text-decoration: none; margin-top: 0.5rem; }
+    .back-link:hover { text-decoration: underline; }
+    .error-detail-toggle { font-size: 12px; color: #aaa; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-bottom: 1rem; text-decoration: underline; }
+    .error-detail-toggle:hover { color: #666; }
+    .error-detail-box { display: none; background: #f0ebe0; border: 1px solid rgba(27,58,45,.1); border-radius: 8px; padding: 1rem; text-align: left; font-size: 12px; color: #555; line-height: 1.6; max-height: 200px; overflow: auto; margin-bottom: 1.5rem; white-space: pre-wrap; word-break: break-word; }
+    @media (max-width: 768px) { .error-left { display: none; } .error-right { padding: 2rem 1.5rem; } }
+  </style>
+</head>
+<body>
 <div class="error-wrap">
-
-  <!-- LEFT PANEL -->
   <div class="error-left">
     <div class="error-brand">
-      <img src="/files/EUSOL--LOGO.png" alt="Eusol Organics" class="error-logo"
-           onerror="this.style.display='none'" />
+      <img src="/files/EUSOL--LOGO.png" alt="Eusol Organics" class="error-logo" onerror="this.style.display='none'" />
       <span class="error-brand-name">Eusol Organics</span>
     </div>
-
     <div class="error-hero">
       <p class="error-eyebrow">Business Portal</p>
       <h1 class="error-heading">Something<br/><em>went a little</em><br/>wrong.</h1>
       <p class="error-body-text">Don't worry — this happens sometimes. Try going back or signing in again.</p>
     </div>
-
     <div class="error-stats">
       <div class="error-stat"><span class="error-stat-num">100%</span><span class="error-stat-lbl">Organic sourced</span></div>
       <div class="error-stat"><span class="error-stat-num">GHS</span><span class="error-stat-lbl">Local currency</span></div>
       <div class="error-stat"><span class="error-stat-num">AUTHENTIC</span><span class="error-stat-lbl">Based in Ghana</span></div>
-      <div class="eusol-stat"><span class="eusol-stat-num">COOKED BY</span><span class="eusol-stat-lbl">Nana Kwaku</span></div>
     </div>
   </div>
-
-  <!-- RIGHT PANEL -->
   <div class="error-right">
     <div class="error-content">
-
       <div class="error-icon">⚠</div>
-
-      {% if http_status_code %}
-        <p class="error-code">Error {{ http_status_code }}</p>
-      {% endif %}
-
-      <h2 class="error-title">{{ title or _("Something went wrong") }}</h2>
-
-      <p class="error-message">{{ message or _("An unexpected error occurred. Please try again or contact your administrator.") }}</p>
-
+      {% if http_status_code %}<p class="error-code">Error {{ http_status_code }}</p>{% endif %}
+      <h2 class="error-title">{{ title or "Something went wrong" }}</h2>
+      <p class="error-message">{{ message or "An unexpected error occurred. Please try again or contact your administrator." }}</p>
       {% if error %}
         <button class="error-detail-toggle" onclick="toggleDetail()">Show technical details</button>
         <div class="error-detail-box" id="error-detail">{{ error }}</div>
       {% endif %}
-
       <a href="/home" class="btn-home">Go to dashboard</a>
       <a href="/signin" class="back-link">← Back to sign in</a>
-
     </div>
   </div>
-
 </div>
-
 <script>
   function toggleDetail() {
     var box = document.getElementById('error-detail');
     var btn = document.querySelector('.error-detail-toggle');
     if (box.style.display === 'block') {
-      box.style.display = 'none';
-      btn.textContent   = 'Show technical details';
+      box.style.display = 'none'; btn.textContent = 'Show technical details';
     } else {
-      box.style.display = 'block';
-      btn.textContent   = 'Hide technical details';
+      box.style.display = 'block'; btn.textContent = 'Hide technical details';
     }
   }
 </script>
-{% endblock %}
+</body>
+</html>
