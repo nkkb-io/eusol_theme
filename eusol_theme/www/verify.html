@@ -173,8 +173,9 @@
       msgEl.style.color = '#7a7a72'; msgEl.textContent = 'Verifying…';
       document.querySelector('.btn-primary').disabled = true;
       try {
-        const res  = await fetch('/api/method/frappe.two_factor.confirm_otp', {
-          method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        const res = await fetch('/api/method/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({ usr, otp, tmp_id: tmpId })
         });
         const data = await res.json();
