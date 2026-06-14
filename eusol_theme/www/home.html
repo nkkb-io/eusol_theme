@@ -11,171 +11,96 @@
 
     /* ── TOPBAR ── */
     .topbar {
-      background: #1b3a2d;
-      padding: 0 2rem;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      background: #1b3a2d; padding: 0 2rem; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
       box-shadow: 0 2px 12px rgba(0,0,0,0.15);
     }
     .topbar-left { display: flex; align-items: center; gap: 12px; }
     .topbar-logo { width: 32px; height: 32px; object-fit: contain; }
     .topbar-brand { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: #fff; }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .topbar-clock { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 300; letter-spacing: 0.5px; }
-    .topbar-user { font-size: 13px; color: rgba(255,255,255,0.7); }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .topbar-clock { font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 300; letter-spacing: 0.5px; }
+    .topbar-user { font-size: 13px; color: rgba(255,255,255,0.65); white-space: nowrap; }
     .topbar-user span { color: #fff; font-weight: 500; }
 
     /* Search */
-    .topbar-search {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
+    .topbar-search { position: relative; display: flex; align-items: center; }
     .search-input {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 20px;
-      padding: 6px 14px 6px 32px;
-      font-size: 13px;
-      color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      width: 200px;
-      outline: none;
-      transition: all 0.2s;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px; padding: 6px 14px 6px 32px; font-size: 13px; color: #fff;
+      font-family: 'DM Sans', sans-serif; width: 200px; outline: none; transition: all 0.2s;
     }
-    .search-input::placeholder { color: rgba(255,255,255,0.4); }
+    .search-input::placeholder { color: rgba(255,255,255,0.38); }
     .search-input:focus { background: rgba(255,255,255,0.15); width: 260px; border-color: rgba(255,255,255,0.3); }
-    .search-icon { position: absolute; left: 10px; font-size: 13px; color: rgba(255,255,255,0.4); pointer-events: none; }
-
-    /* Search results dropdown */
+    .search-icon { position: absolute; left: 10px; font-size: 12px; color: rgba(255,255,255,0.38); pointer-events: none; }
     .search-results {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      right: 0;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-      display: none;
-      overflow: hidden;
-      z-index: 200;
-      min-width: 280px;
+      position: absolute; top: calc(100% + 8px); left: 0; min-width: 280px;
+      background: #fff; border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      display: none; z-index: 300; overflow: hidden;
     }
     .search-results.show { display: block; }
     .search-result-item {
-      padding: 10px 14px;
-      font-size: 13px;
-      color: #1b3a2d;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: background 0.15s;
+      padding: 10px 14px; font-size: 13px; color: #1b3a2d; text-decoration: none;
+      display: flex; align-items: center; gap: 10px; transition: background 0.15s;
       border-bottom: 1px solid #f5f0e8;
     }
     .search-result-item:last-child { border-bottom: none; }
     .search-result-item:hover { background: #f5f0e8; }
-    .search-result-icon { font-size: 16px; }
-    .search-result-label { font-weight: 500; }
-    .search-result-type { font-size: 11px; color: #888; margin-left: auto; }
+    .search-result-icon { font-size: 15px; }
+    .search-result-label { font-weight: 500; flex: 1; }
+    .search-result-type { font-size: 11px; color: #aaa; }
 
-    /* Notification bell */
+    /* Notifications */
+    .notif-wrap { position: relative; }
     .notif-btn {
-      position: relative;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 8px;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: rgba(255,255,255,0.7);
-      font-size: 16px;
-      transition: background 0.2s;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px; width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 15px; transition: background 0.2s; position: relative;
     }
-    .notif-btn:hover { background: rgba(255,255,255,0.18); color: #fff; }
+    .notif-btn:hover { background: rgba(255,255,255,0.18); }
     .notif-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: #c9a84c;
-      color: #1b3a2d;
-      font-size: 10px;
-      font-weight: 700;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: absolute; top: -5px; right: -5px; background: #c9a84c; color: #1b3a2d;
+      font-size: 9px; font-weight: 700; width: 16px; height: 16px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
     }
-
-    /* Notification dropdown */
     .notif-dropdown {
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
-      width: 320px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-      display: none;
-      z-index: 200;
-      overflow: hidden;
+      position: absolute; top: calc(100% + 8px); right: 0; width: 320px;
+      background: #fff; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      display: none; z-index: 300; overflow: hidden;
     }
     .notif-dropdown.show { display: block; }
     .notif-header {
-      padding: 14px 16px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #1b3a2d;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      border-bottom: 1px solid #f5f0e8;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 12px 16px; font-size: 11px; font-weight: 600; color: #1b3a2d;
+      letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1px solid #f5f0e8;
+      display: flex; align-items: center; justify-content: space-between;
     }
     .notif-clear { font-size: 11px; color: #5a8a6a; cursor: pointer; font-weight: 400; text-transform: none; letter-spacing: 0; }
     .notif-clear:hover { text-decoration: underline; }
     .notif-item {
-      padding: 12px 16px;
-      font-size: 13px;
-      color: #3d3d38;
-      border-bottom: 1px solid #f5f0e8;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      text-decoration: none;
-      transition: background 0.15s;
+      padding: 11px 16px; font-size: 13px; color: #3d3d38; border-bottom: 1px solid #f5f0e8;
+      display: flex; align-items: flex-start; gap: 10px; cursor: pointer; transition: background 0.15s;
     }
-    .notif-item:hover { background: #f5f0e8; }
     .notif-item:last-child { border-bottom: none; }
+    .notif-item:hover { background: #f5f0e8; }
     .notif-dot { width: 7px; height: 7px; border-radius: 50%; background: #5a8a6a; flex-shrink: 0; margin-top: 4px; }
+    .notif-text { font-size: 12px; line-height: 1.5; color: #3d3d38; }
     .notif-empty { padding: 24px 16px; text-align: center; font-size: 13px; color: #aaa; }
     .notif-footer { padding: 10px 16px; text-align: center; border-top: 1px solid #f5f0e8; }
     .notif-footer a { font-size: 12px; color: #5a8a6a; text-decoration: none; }
     .notif-footer a:hover { text-decoration: underline; }
 
+    /* Topbar links */
     .topbar-links { display: flex; align-items: center; gap: 4px; }
-    .topbar-link { font-size: 12px; color: rgba(255,255,255,0.6); text-decoration: none; padding: 6px 10px; border-radius: 6px; transition: background 0.2s, color 0.2s; }
+    .topbar-link { font-size: 12px; color: rgba(255,255,255,0.6); text-decoration: none; padding: 6px 10px; border-radius: 6px; transition: background 0.2s, color 0.2s; white-space: nowrap; }
     .topbar-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
     .topbar-link.desk { background: rgba(255,255,255,0.12); color: #fff; }
     .topbar-link.logout { color: rgba(255,255,255,0.4); }
 
     /* ── HERO ── */
     .hero {
-      background: #1b3a2d;
-      padding: 2rem 2rem 2.5rem;
-      position: relative;
-      overflow: hidden;
+      background: #1b3a2d; padding: 2rem 2rem 2.5rem; position: relative; overflow: hidden;
     }
     .hero::before {
       content: ''; position: absolute; inset: 0;
@@ -184,24 +109,16 @@
       pointer-events: none;
     }
     .hero-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
-    .hero-top { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.5rem; }
-    .hero-eyebrow { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: #c9a84c; margin-bottom: 0.5rem; font-weight: 500; }
-    .hero-greeting { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 32px); color: #fff; font-weight: 400; margin-bottom: 0.2rem; line-height: 1.2; }
+    .hero-top { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .hero-eyebrow { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: #c9a84c; margin-bottom: 0.4rem; font-weight: 500; }
+    .hero-greeting { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 32px); color: #fff; font-weight: 400; line-height: 1.2; margin-bottom: 0.3rem; }
     .hero-greeting em { color: #a8c5b0; font-style: italic; }
     .hero-subtitle { font-size: 13px; color: rgba(168,197,176,0.7); font-weight: 300; }
-
-    /* Quick actions in hero */
-    .quick-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .quick-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .qa-btn {
-      padding: 9px 18px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      font-family: 'DM Sans', sans-serif;
-      text-decoration: none;
-      transition: all 0.2s;
-      cursor: pointer;
-      border: none;
+      padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      font-family: 'DM Sans', sans-serif; text-decoration: none; transition: all 0.2s;
+      cursor: pointer; border: none; white-space: nowrap;
     }
     .qa-btn.primary { background: #c9a84c; color: #1b3a2d; }
     .qa-btn.primary:hover { background: #d4b55c; }
@@ -209,39 +126,30 @@
     .qa-btn.secondary:hover { background: rgba(255,255,255,0.18); }
 
     /* ── STATS BAR ── */
-    .stats-bar {
-      background: #fff;
-      border-bottom: 1px solid rgba(27,58,45,0.08);
-    }
+    .stats-bar { background: #fff; border-bottom: 1px solid rgba(27,58,45,0.08); }
     .stats-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      display: flex;
-      gap: 0;
+      max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+      display: flex; gap: 0; overflow-x: auto;
     }
     .stat-item {
-      padding: 1rem 2rem 1rem 0;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-right: 1px solid rgba(27,58,45,0.08);
-      margin-right: 2rem;
+      padding: 1rem 2rem 1rem 0; display: flex; align-items: center; gap: 12px;
+      border-right: 1px solid rgba(27,58,45,0.08); margin-right: 2rem; flex-shrink: 0;
     }
     .stat-item:last-child { border-right: none; margin-right: 0; }
     .stat-icon { font-size: 20px; }
     .stat-info { display: flex; flex-direction: column; gap: 1px; }
-    .stat-value { font-size: 16px; font-weight: 600; color: #1b3a2d; }
-    .stat-label { font-size: 11px; color: #888; font-weight: 400; }
+    .stat-value { font-size: 15px; font-weight: 600; color: #1b3a2d; }
+    .stat-label { font-size: 11px; color: #888; }
 
-    /* ── MAIN ── */
+    /* ── MAIN GRID ── */
     .main { max-width: 1200px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 1fr 280px; gap: 2rem; }
 
-    /* ── SECTIONS ── */
+    /* Sections */
     .sections { min-width: 0; }
     .section { margin-bottom: 2rem; }
-    .section-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #5a8a6a; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(27,58,45,0.1); }
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.875rem; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(27,58,45,0.1); }
+    .section-title { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #5a8a6a; }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 0.875rem; }
     .card {
       background: #fff; border: 1px solid rgba(27,58,45,0.1); border-radius: 12px;
       padding: 1.125rem 1rem; text-decoration: none; display: flex;
@@ -250,50 +158,85 @@
     }
     .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(27,58,45,0.1); border-color: rgba(27,58,45,0.2); }
     .card:active { transform: translateY(0); }
-    .card-icon { font-size: 22px; width: 42px; height: 42px; background: #f5f0e8; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-    .card-label { font-size: 13px; font-weight: 500; color: #1b3a2d; line-height: 1.3; }
+    .card-icon { font-size: 20px; width: 40px; height: 40px; background: #f5f0e8; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .card-label { font-size: 12px; font-weight: 500; color: #1b3a2d; line-height: 1.3; }
+
+    /* Reports section */
+    .reports-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 0.75rem; }
+    .report-card {
+      background: #fff; border: 1px solid rgba(27,58,45,0.1); border-radius: 10px;
+      padding: 0.875rem 1rem; text-decoration: none; display: flex; align-items: center;
+      gap: 10px; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .report-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(27,58,45,0.08); border-color: rgba(27,58,45,0.2); }
+    .report-icon { font-size: 16px; flex-shrink: 0; }
+    .report-label { font-size: 12px; font-weight: 500; color: #1b3a2d; line-height: 1.3; }
+
+    /* ── ADD WIDGET BUTTON ── */
+    .add-widget-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: #fff; border: 1.5px dashed rgba(27,58,45,0.2); border-radius: 12px;
+      padding: 1rem; color: #5a8a6a; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+      width: 100%; margin-top: 0.5rem;
+    }
+    .add-widget-btn:hover { border-color: #5a8a6a; background: #f5f0e8; }
+
+    /* Widget modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 500;
+      display: none; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: #fff; border-radius: 16px; width: 100%; max-width: 480px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden;
+    }
+    .modal-header {
+      padding: 20px 24px 16px; border-bottom: 1px solid #f5f0e8;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; color: #1b3a2d; }
+    .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #888; line-height: 1; padding: 4px; }
+    .modal-close:hover { color: #1b3a2d; }
+    .modal-body { padding: 20px 24px; }
+    .modal-sub { font-size: 13px; color: #888; margin-bottom: 16px; font-weight: 300; }
+    .widget-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .widget-option {
+      padding: 14px; border: 1.5px solid rgba(27,58,45,0.12); border-radius: 10px;
+      cursor: pointer; transition: all 0.15s; text-align: center;
+    }
+    .widget-option:hover { border-color: #5a8a6a; background: #f5f0e8; }
+    .widget-option.selected { border-color: #1b3a2d; background: #f5f0e8; }
+    .widget-option-icon { font-size: 24px; margin-bottom: 6px; }
+    .widget-option-label { font-size: 12px; font-weight: 500; color: #1b3a2d; }
+    .widget-option-desc { font-size: 11px; color: #888; margin-top: 2px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid #f5f0e8; display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-cancel { padding: 9px 18px; background: none; border: 1px solid rgba(27,58,45,0.2); border-radius: 8px; font-size: 13px; color: #888; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .btn-add { padding: 9px 18px; background: #1b3a2d; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .btn-add:hover { background: #2d5a3d; }
 
     /* ── SIDEBAR ── */
     .sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
-
-    .sidebar-panel {
-      background: #fff;
-      border: 1px solid rgba(27,58,45,0.1);
-      border-radius: 12px;
-      overflow: hidden;
-    }
+    .sidebar-panel { background: #fff; border: 1px solid rgba(27,58,45,0.1); border-radius: 12px; overflow: hidden; }
     .sidebar-panel-header {
-      padding: 12px 16px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #5a8a6a;
-      border-bottom: 1px solid rgba(27,58,45,0.08);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 12px 16px; font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; color: #5a8a6a; border-bottom: 1px solid rgba(27,58,45,0.08);
+      display: flex; align-items: center; justify-content: space-between;
     }
     .sidebar-panel-header a { font-size: 11px; color: #5a8a6a; text-decoration: none; text-transform: none; letter-spacing: 0; font-weight: 400; }
     .sidebar-panel-header a:hover { text-decoration: underline; }
-
-    /* Recent docs */
     .recent-item {
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      border-bottom: 1px solid rgba(27,58,45,0.06);
-      transition: background 0.15s;
+      padding: 10px 16px; display: flex; align-items: center; gap: 10px;
+      text-decoration: none; border-bottom: 1px solid rgba(27,58,45,0.06); transition: background 0.15s;
     }
     .recent-item:last-child { border-bottom: none; }
     .recent-item:hover { background: #f5f0e8; }
-    .recent-icon { width: 32px; height: 32px; background: #f5f0e8; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .recent-icon { width: 30px; height: 30px; background: #f5f0e8; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
     .recent-info { min-width: 0; }
-    .recent-type { font-size: 11px; color: #888; font-weight: 400; }
+    .recent-type { font-size: 10px; color: #aaa; }
     .recent-name { font-size: 12px; color: #1b3a2d; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .recent-empty { padding: 20px 16px; text-align: center; font-size: 12px; color: #aaa; }
+    .panel-empty { padding: 20px 16px; text-align: center; font-size: 12px; color: #aaa; }
 
     /* ── FOOTER ── */
     .footer { max-width: 1200px; margin: 0 auto; padding: 1rem 2rem 2rem; display: flex; align-items: center; justify-content: space-between; }
@@ -305,19 +248,17 @@
     .footer-stat-lbl { font-size: 11px; color: #aaa; }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      .main { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
-    }
+    @media (max-width: 900px) { .main { grid-template-columns: 1fr; } .sidebar { display: none; } }
     @media (max-width: 768px) {
       .topbar { padding: 0 1rem; }
       .topbar-user, .topbar-clock, .topbar-search { display: none; }
       .hero { padding: 1.5rem 1rem 2rem; }
-      .hero-top { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .hero-top { flex-direction: column; align-items: flex-start; }
       .main { padding: 1.5rem 1rem; }
       .cards-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-      .stats-inner { overflow-x: auto; padding-bottom: 4px; }
       .footer { flex-direction: column; gap: 1rem; align-items: flex-start; }
+      .footer-stats { gap: 1rem; }
+      .footer-stat { align-items: flex-start; }
     }
   </style>
 </head>
@@ -332,15 +273,15 @@
     <div class="topbar-right">
       <span class="topbar-clock" id="topbar-clock"></span>
 
-      <!-- Search -->
+      <!-- Global Search -->
       <div class="topbar-search" id="search-wrap">
         <span class="search-icon">🔍</span>
-        <input class="search-input" type="text" id="global-search" placeholder="Search..." autocomplete="off" />
+        <input class="search-input" type="text" id="global-search" placeholder="Search…" autocomplete="off" />
         <div class="search-results" id="search-results"></div>
       </div>
 
       <!-- Notifications -->
-      <div style="position:relative;">
+      <div class="notif-wrap">
         <div class="notif-btn" id="notif-btn" onclick="toggleNotif()">
           🔔
           {% if notification_count and notification_count > 0 %}
@@ -352,10 +293,8 @@
             Notifications
             <span class="notif-clear" onclick="markAllRead()">Mark all read</span>
           </div>
-          <div id="notif-list">
-            <div class="notif-empty">Loading…</div>
-          </div>
-          <div class="notif-footer"><a href="/app/notification-log">View all notifications</a></div>
+          <div id="notif-list"><div class="notif-empty">Loading…</div></div>
+          <div class="notif-footer"><a href="/app/notification-log">View all</a></div>
         </div>
       </div>
 
@@ -363,7 +302,7 @@
 
       <div class="topbar-links">
         <a href="/app" class="topbar-link desk">Desk</a>
-        <a href="/api/method/logout" class="topbar-link logout">Sign out</a>
+        <a href="#" onclick="doLogout()" class="topbar-link logout">Sign out</a>
       </div>
     </div>
   </nav>
@@ -405,14 +344,17 @@
   </div>
   {% endif %}
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN -->
   <main class="main">
 
-    <!-- LEFT: Sections + Cards -->
-    <div class="sections">
+    <!-- LEFT: Sections -->
+    <div class="sections" id="sections-container">
+
       {% for section in dashboard.sections %}
       <div class="section">
-        <p class="section-title">{{ section.title }}</p>
+        <div class="section-header">
+          <p class="section-title">{{ section.title }}</p>
+        </div>
         <div class="cards-grid">
           {% for card in section.cards %}
           <a href="{{ card.url }}" class="card">
@@ -423,6 +365,33 @@
         </div>
       </div>
       {% endfor %}
+
+      <!-- Reports Section -->
+      {% if reports %}
+      <div class="section">
+        <div class="section-header">
+          <p class="section-title">Reports</p>
+        </div>
+        <div class="reports-grid">
+          {% for report in reports %}
+          <a href="{{ report.url }}" class="report-card">
+            <span class="report-icon">{{ report.icon }}</span>
+            <span class="report-label">{{ report.label }}</span>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Custom Widgets (loaded from localStorage) -->
+      <div id="custom-widgets"></div>
+
+      <!-- Add Widget Button -->
+      <button class="add-widget-btn" onclick="openWidgetModal()">
+        <span style="font-size:18px;">＋</span>
+        Add a shortcut or widget
+      </button>
+
     </div>
 
     <!-- RIGHT: Sidebar -->
@@ -434,24 +403,19 @@
           Recent
           <a href="/app">View all</a>
         </div>
-        <div id="recent-docs-list">
-          <div class="recent-empty">Loading…</div>
-        </div>
+        <div id="recent-docs-list"><div class="panel-empty">Loading…</div></div>
       </div>
 
-      <!-- Notifications panel -->
+      <!-- Notifications -->
       <div class="sidebar-panel">
         <div class="sidebar-panel-header">
           Notifications
           <a href="/app/notification-log">View all</a>
         </div>
-        <div id="sidebar-notif-list">
-          <div class="recent-empty">Loading…</div>
-        </div>
+        <div id="sidebar-notif-list"><div class="panel-empty">Loading…</div></div>
       </div>
 
     </aside>
-
   </main>
 
   <!-- FOOTER -->
@@ -464,148 +428,180 @@
     </div>
   </footer>
 
+  <!-- ADD WIDGET MODAL -->
+  <div class="modal-overlay" id="widget-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Add Shortcut</span>
+        <button class="modal-close" onclick="closeWidgetModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-sub">Choose a shortcut to add to your dashboard. You can remove it anytime.</p>
+        <div class="widget-options" id="widget-options"></div>
+        <div style="margin-top:16px;">
+          <p style="font-size:12px;color:#888;margin-bottom:8px;">Or add a custom link:</p>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="custom-icon" placeholder="Icon (emoji)" style="width:80px;padding:8px 10px;border:1.5px solid rgba(27,58,45,0.2);border-radius:8px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;" />
+            <input type="text" id="custom-label" placeholder="Label e.g. My Report" style="flex:1;padding:8px 10px;border:1.5px solid rgba(27,58,45,0.2);border-radius:8px;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;" />
+            <input type="text" id="custom-url" placeholder="/app/..." style="flex:1;padding:8px 10px;border:1.5px solid rgba(27,58,45,0.2);border-radius:8px;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeWidgetModal()">Cancel</button>
+        <button class="btn-add" onclick="addWidget()">Add shortcut</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // ── Clock ──
+    // ── Clock (Ghana = UTC+0, same as UTC) ──
     function updateClock() {
       var now = new Date();
-      var h = now.getHours(), m = now.getMinutes();
+      var h = now.getUTCHours(), m = now.getUTCMinutes();
       var ampm = h >= 12 ? 'PM' : 'AM';
       h = h % 12 || 12;
       document.getElementById('topbar-clock').textContent =
         (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ' ' + ampm + ' GMT';
     }
     updateClock();
-    setInterval(updateClock, 60000);
+    setInterval(updateClock, 30000);
 
     // ── Greeting ──
     (function() {
       var h = new Date().getHours();
       var tod = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
-      document.querySelector('.hero-greeting').innerHTML =
-        document.querySelector('.hero-greeting').innerHTML.replace('Good morning,', 'Good ' + tod + ',');
+      var el = document.querySelector('.hero-greeting');
+      el.innerHTML = el.innerHTML.replace('Good morning,', 'Good ' + tod + ',');
     })();
+
+    // ── Logout ──
+    function doLogout() {
+      fetch('/api/method/frappe.handler.logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+      .then(function() { window.location.href = '/signin'; })
+      .catch(function() { window.location.href = '/signin'; });
+    }
 
     // ── Notifications ──
     function toggleNotif() {
       var dd = document.getElementById('notif-dropdown');
       dd.classList.toggle('show');
       if (dd.classList.contains('show')) loadNotifications();
-      // close search if open
       document.getElementById('search-results').classList.remove('show');
     }
 
     function loadNotifications() {
-      fetch('/api/method/frappe.client.get_list?doctype=Notification%20Log&fields=["subject","type","creation","read"]&filters=[["for_user","=","{{ user_email }}"]]&limit=6&order_by=creation%20desc')
+      fetch('/api/resource/Notification Log?fields=["subject","type","creation","read"]&filters=[["for_user","=","{{ user_email }}"]]&limit=6&order_by=creation desc')
         .then(function(r) { return r.json(); })
         .then(function(data) {
-          var list = document.getElementById('notif-list');
-          var sideList = document.getElementById('sidebar-notif-list');
-          var items = (data.message || []);
-          if (!items.length) {
-            list.innerHTML = '<div class="notif-empty">You\'re all caught up! 🎉</div>';
-            sideList.innerHTML = '<div class="recent-empty">No notifications</div>';
-            return;
-          }
-          var html = items.map(function(n) {
-            return '<div class="notif-item"><span class="notif-dot"></span><span>' + (n.subject || 'Notification') + '</span></div>';
-          }).join('');
-          list.innerHTML = html;
-          sideList.innerHTML = items.slice(0,4).map(function(n) {
-            return '<div class="recent-item"><div class="recent-icon">🔔</div><div class="recent-info"><div class="recent-type">Notification</div><div class="recent-name">' + (n.subject || 'Notification') + '</div></div></div>';
-          }).join('');
+          var items = (data.data || []);
+          renderNotifications(items);
         })
         .catch(function() {
-          document.getElementById('notif-list').innerHTML = '<div class="notif-empty">Could not load notifications.</div>';
+          document.getElementById('notif-list').innerHTML = '<div class="notif-empty">Could not load.</div>';
         });
+    }
+
+    function renderNotifications(items) {
+      var list    = document.getElementById('notif-list');
+      var sidebar = document.getElementById('sidebar-notif-list');
+      if (!items.length) {
+        list.innerHTML    = '<div class="notif-empty">You\'re all caught up! 🎉</div>';
+        sidebar.innerHTML = '<div class="panel-empty">No notifications</div>';
+        return;
+      }
+      list.innerHTML = items.map(function(n) {
+        return '<div class="notif-item"><span class="notif-dot"></span><span class="notif-text">' + (n.subject || 'Notification') + '</span></div>';
+      }).join('');
+      sidebar.innerHTML = items.slice(0,5).map(function(n) {
+        return '<div class="recent-item"><div class="recent-icon">🔔</div><div class="recent-info"><div class="recent-type">Notification</div><div class="recent-name">' + (n.subject || 'Notification') + '</div></div></div>';
+      }).join('');
     }
 
     function markAllRead() {
       fetch('/api/method/frappe.desk.notifications.mark_all_notifications_as_read', { method: 'POST' })
         .then(function() {
           document.getElementById('notif-list').innerHTML = '<div class="notif-empty">All caught up! 🎉</div>';
+          document.getElementById('sidebar-notif-list').innerHTML = '<div class="panel-empty">No notifications</div>';
           var badge = document.querySelector('.notif-badge');
           if (badge) badge.remove();
         });
     }
 
-    // Close notif on outside click
     document.addEventListener('click', function(e) {
-      if (!document.getElementById('notif-btn').contains(e.target) &&
-          !document.getElementById('notif-dropdown').contains(e.target)) {
-        document.getElementById('notif-dropdown').classList.remove('show');
-      }
+      var btn = document.getElementById('notif-btn');
+      var dd  = document.getElementById('notif-dropdown');
+      if (!btn.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('show');
+      var sw = document.getElementById('search-wrap');
+      if (!sw.contains(e.target)) document.getElementById('search-results').classList.remove('show');
     });
 
     // ── Recent Documents ──
     function loadRecentDocs() {
-      fetch('/api/method/frappe.desk.form.load.get_doc_before_save?doctype=DocType&name=DocType')
-        .catch(function(){});
-
-      // Use frappe's recent documents API
-      fetch('/api/method/frappe.desk.desk.get_user_info_for_sidebar')
-        .then(function(r) { return r.json(); })
-        .catch(function() { return null; });
-
-      // Fallback: show recently viewed from Activity Log
-      fetch('/api/resource/Activity Log?filters=[["user","=","{{ user_email }}"],["reference_doctype","!=",""]]&fields=["reference_doctype","reference_name","creation"]&limit=5&order_by=creation desc')
+      fetch('/api/resource/Activity Log?fields=["reference_doctype","reference_name","creation"]&filters=[["user","=","{{ user_email }}"],["reference_doctype","!=",""]]&limit=6&order_by=creation desc')
         .then(function(r) { return r.json(); })
         .then(function(data) {
-          var list = document.getElementById('recent-docs-list');
           var items = (data.data || []);
-          if (!items.length) {
-            list.innerHTML = '<div class="recent-empty">No recent documents</div>';
-            return;
-          }
+          var list  = document.getElementById('recent-docs-list');
+          if (!items.length) { list.innerHTML = '<div class="panel-empty">No recent documents</div>'; return; }
           var icons = {
-            'Sales Invoice': '🧾', 'Purchase Invoice': '🧾', 'Sales Order': '🛒',
-            'Purchase Order': '🛒', 'Stock Entry': '📦', 'Payment Entry': '💳',
-            'Employee': '👤', 'Customer': '👥', 'Supplier': '🏢', 'Item': '🏷️',
-            'Work Order': '🏭', 'Delivery Note': '📤', 'Purchase Receipt': '📥',
-            'Leave Application': '🗓️', 'Salary Slip': '📄', 'Journal Entry': '📔',
+            'Sales Invoice':'🧾','Purchase Invoice':'🧾','Sales Order':'🛒','Purchase Order':'🛒',
+            'Stock Entry':'📦','Payment Entry':'💳','Employee':'👤','Customer':'👥',
+            'Supplier':'🏢','Item':'🏷️','Work Order':'🏭','Delivery Note':'📤',
+            'Purchase Receipt':'📥','Leave Application':'🗓️','Salary Slip':'📄',
+            'Journal Entry':'📔','Quotation':'💰','BOM':'📐','Job Card':'🔄',
           };
-          list.innerHTML = items.map(function(d) {
+          // deduplicate
+          var seen = {}, unique = [];
+          items.forEach(function(d) {
+            var k = d.reference_doctype + '|' + d.reference_name;
+            if (!seen[k]) { seen[k] = true; unique.push(d); }
+          });
+          list.innerHTML = unique.slice(0,5).map(function(d) {
             var icon = icons[d.reference_doctype] || '📋';
-            var url = '/app/' + (d.reference_doctype || '').toLowerCase().replace(/ /g,'-') + '/' + encodeURIComponent(d.reference_name || '');
+            var slug = (d.reference_doctype || '').toLowerCase().replace(/ /g,'-');
+            var url  = '/app/' + slug + '/' + encodeURIComponent(d.reference_name || '');
             return '<a href="' + url + '" class="recent-item">' +
               '<div class="recent-icon">' + icon + '</div>' +
-              '<div class="recent-info">' +
-                '<div class="recent-type">' + (d.reference_doctype || '') + '</div>' +
-                '<div class="recent-name">' + (d.reference_name || '') + '</div>' +
-              '</div></a>';
+              '<div class="recent-info"><div class="recent-type">' + (d.reference_doctype||'') + '</div>' +
+              '<div class="recent-name">' + (d.reference_name||'') + '</div></div></a>';
           }).join('');
         })
         .catch(function() {
-          document.getElementById('recent-docs-list').innerHTML = '<div class="recent-empty">No recent documents</div>';
+          document.getElementById('recent-docs-list').innerHTML = '<div class="panel-empty">No recent documents</div>';
         });
     }
 
     // ── Global Search ──
     var searchIndex = [
       {% for section in dashboard.sections %}{% for card in section.cards %}
-      { label: "{{ card.label }}", url: "{{ card.url }}", icon: "{{ card.icon }}", type: "{{ section.title }}" },
+      { label:"{{ card.label }}", url:"{{ card.url }}", icon:"{{ card.icon }}", type:"{{ section.title }}" },
       {% endfor %}{% endfor %}
+      {% if reports %}{% for r in reports %}
+      { label:"{{ r.label }}", url:"{{ r.url }}", icon:"{{ r.icon }}", type:"Reports" },
+      {% endfor %}{% endif %}
     ];
 
-    var searchInput = document.getElementById('global-search');
+    var searchInput   = document.getElementById('global-search');
     var searchResults = document.getElementById('search-results');
 
     searchInput.addEventListener('input', function() {
       var q = this.value.trim().toLowerCase();
       if (!q) { searchResults.classList.remove('show'); return; }
-
-      var matches = searchIndex.filter(function(item) {
-        return item.label.toLowerCase().includes(q) || item.type.toLowerCase().includes(q);
-      }).slice(0, 6);
-
+      var matches = searchIndex.filter(function(i) {
+        return i.label.toLowerCase().includes(q) || i.type.toLowerCase().includes(q);
+      }).slice(0, 7);
       if (!matches.length) {
-        searchResults.innerHTML = '<div class="search-result-item"><span class="search-result-label" style="color:#888">No results for "' + q + '"</span></div>';
+        searchResults.innerHTML = '<div class="search-result-item"><span class="search-result-label" style="color:#aaa">No results for "' + q + '"</span></div>';
       } else {
         searchResults.innerHTML = matches.map(function(m) {
           return '<a href="' + m.url + '" class="search-result-item">' +
             '<span class="search-result-icon">' + m.icon + '</span>' +
             '<span class="search-result-label">' + m.label + '</span>' +
-            '<span class="search-result-type">' + m.type + '</span>' +
-          '</a>';
+            '<span class="search-result-type">' + m.type + '</span></a>';
         }).join('');
       }
       searchResults.classList.add('show');
@@ -615,15 +611,104 @@
       if (e.key === 'Escape') { searchResults.classList.remove('show'); this.value = ''; }
     });
 
-    document.addEventListener('click', function(e) {
-      if (!document.getElementById('search-wrap').contains(e.target)) {
-        searchResults.classList.remove('show');
-      }
+    // ── Custom Widgets (Add your own shortcuts) ──
+    var STORAGE_KEY = 'eusol_home_widgets_{{ user_email | replace("@","_") | replace(".","_") }}';
+
+    var presetWidgets = [
+      { icon:'📊', label:'Sales Analytics',    url:'/app/sales-analytics',         type:'Report' },
+      { icon:'📦', label:'Stock Balance',       url:'/app/stock-balance',            type:'Stock' },
+      { icon:'💰', label:'Accounts Receivable', url:'/app/accounts-receivable',      type:'Finance' },
+      { icon:'📋', label:'Trial Balance',       url:'/app/trial-balance',            type:'Finance' },
+      { icon:'👤', label:'Employee List',       url:'/app/employee',                 type:'HR' },
+      { icon:'🗓️', label:'Leave Applications',  url:'/app/leave-application',        type:'HR' },
+      { icon:'🏭', label:'Work Orders',         url:'/app/work-order',               type:'Manufacturing' },
+      { icon:'🛒', label:'Purchase Orders',     url:'/app/purchase-order',           type:'Purchase' },
+    ];
+
+    function openWidgetModal() {
+      var opts = document.getElementById('widget-options');
+      opts.innerHTML = presetWidgets.map(function(w, i) {
+        return '<div class="widget-option" onclick="selectPreset(' + i + ')" data-idx="' + i + '">' +
+          '<div class="widget-option-icon">' + w.icon + '</div>' +
+          '<div class="widget-option-label">' + w.label + '</div>' +
+          '<div class="widget-option-desc">' + w.type + '</div></div>';
+      }).join('');
+      document.getElementById('widget-modal').classList.add('show');
+      document.getElementById('custom-icon').value  = '';
+      document.getElementById('custom-label').value = '';
+      document.getElementById('custom-url').value   = '';
+    }
+
+    function closeWidgetModal() {
+      document.getElementById('widget-modal').classList.remove('show');
+    }
+
+    var selectedPreset = null;
+    function selectPreset(idx) {
+      selectedPreset = idx;
+      document.querySelectorAll('.widget-option').forEach(function(el) { el.classList.remove('selected'); });
+      document.querySelector('.widget-option[data-idx="' + idx + '"]').classList.add('selected');
+      var w = presetWidgets[idx];
+      document.getElementById('custom-icon').value  = w.icon;
+      document.getElementById('custom-label').value = w.label;
+      document.getElementById('custom-url').value   = w.url;
+    }
+
+    function addWidget() {
+      var icon  = document.getElementById('custom-icon').value.trim()  || '🔗';
+      var label = document.getElementById('custom-label').value.trim();
+      var url   = document.getElementById('custom-url').value.trim();
+      if (!label || !url) { alert('Please fill in a label and URL.'); return; }
+      var widgets = getSavedWidgets();
+      widgets.push({ icon: icon, label: label, url: url });
+      saveWidgets(widgets);
+      renderCustomWidgets();
+      closeWidgetModal();
+    }
+
+    function getSavedWidgets() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; }
+    }
+
+    function saveWidgets(widgets) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(widgets)); } catch(e) {}
+    }
+
+    function removeWidget(idx) {
+      var widgets = getSavedWidgets();
+      widgets.splice(idx, 1);
+      saveWidgets(widgets);
+      renderCustomWidgets();
+    }
+
+    function renderCustomWidgets() {
+      var widgets = getSavedWidgets();
+      var container = document.getElementById('custom-widgets');
+      if (!widgets.length) { container.innerHTML = ''; return; }
+      container.innerHTML =
+        '<div class="section">' +
+        '<div class="section-header"><p class="section-title">My Shortcuts</p></div>' +
+        '<div class="cards-grid">' +
+        widgets.map(function(w, i) {
+          return '<div style="position:relative;">' +
+            '<a href="' + w.url + '" class="card">' +
+            '<div class="card-icon">' + w.icon + '</div>' +
+            '<span class="card-label">' + w.label + '</span></a>' +
+            '<button onclick="removeWidget(' + i + ')" title="Remove" style="position:absolute;top:6px;right:6px;background:rgba(27,58,45,0.08);border:none;border-radius:50%;width:20px;height:20px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#888;">✕</button>' +
+            '</div>';
+        }).join('') +
+        '</div></div>';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('widget-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeWidgetModal();
     });
 
     // ── Init ──
     loadRecentDocs();
     loadNotifications();
+    renderCustomWidgets();
   </script>
 
 </body>
