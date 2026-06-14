@@ -1,264 +1,80 @@
-{% extends "templates/web.html" %}
-
-{% block title %}{{ title or _("Message") }} | Eusol Organics{% endblock %}
-{% block navbar %}{% endblock %}
-{% block footer %}{% endblock %}
-
-{% block head_include %}
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  .navbar, .web-header, footer.web-footer { display: none !important; }
-  body { background: #fdfaf4 !important; font-family: 'DM Sans', sans-serif; }
-
-  .msg-wrap {
-    display: flex;
-    min-height: 100vh;
-  }
-
-  /* ── LEFT PANEL ── */
-  .msg-left {
-    width: 42%;
-    min-height: 100vh;
-    background: #1b3a2d;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 3rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .msg-left::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 10% 90%, rgba(90,138,106,.3) 0%, transparent 45%),
-      radial-gradient(circle at 90% 10%, rgba(45,90,61,.4) 0%, transparent 40%);
-    pointer-events: none;
-  }
-
-  .msg-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .msg-logo {
-    width: 42px;
-    height: 42px;
-    object-fit: contain;
-  }
-
-  .msg-brand-name {
-    color: #fff;
-    font-size: 17px;
-    font-weight: 600;
-    font-family: 'Playfair Display', serif;
-  }
-
-  .msg-hero {
-    position: relative;
-    z-index: 1;
-  }
-
-  .msg-eyebrow {
-    color: #c9a84c;
-    font-size: 11px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-
-  .msg-heading {
-    color: #fff;
-    font-size: 38px;
-    line-height: 1.2;
-    font-weight: 400;
-    margin-bottom: 1rem;
-    font-family: 'Playfair Display', serif;
-  }
-
-  .msg-heading em {
-    color: #a8c5b0;
-    font-style: italic;
-  }
-
-  .msg-body-text {
-    color: rgba(168,197,176,.8);
-    font-size: 14px;
-    line-height: 1.7;
-    font-weight: 300;
-  }
-
-  .msg-stats {
-    display: flex;
-    gap: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(168,197,176,.15);
-    position: relative;
-    z-index: 1;
-  }
-
-  .msg-stat { display: flex; flex-direction: column; gap: 2px; }
-  .msg-stat-num { color: #fff; font-size: 20px; font-weight: 600; }
-  .msg-stat-lbl { color: rgba(168,197,176,.6); font-size: 11px; }
-
-  /* ── RIGHT PANEL ── */
-  .msg-right {
-    flex: 1;
-    background: #fdfaf4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-  }
-
-  .msg-content {
-    width: 100%;
-    max-width: 380px;
-    text-align: center;
-  }
-
-  /* icon circle */
-  .msg-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: #1b3a2d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 28px;
-    color: #fff;
-  }
-
-  .msg-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 600;
-    color: #1b3a2d;
-    margin-bottom: 0.5rem;
-  }
-
-  .msg-text {
-    font-size: 14px;
-    color: #666;
-    line-height: 1.7;
-    font-weight: 300;
-    margin-bottom: 0.5rem;
-  }
-
-  .msg-status {
-    font-size: 12px;
-    color: #aaa;
-    margin-bottom: 2rem;
-  }
-
-  .btn-msg {
-    display: inline-block;
-    width: 100%;
-    padding: 13px;
-    background: #1b3a2d;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    transition: background 0.2s;
-    text-decoration: none;
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-
-  .btn-msg:hover { background: #2d5a3d; color: #fff; }
-
-  .btn-back {
-    display: block;
-    font-size: 13px;
-    color: #5a8a6a;
-    text-decoration: none;
-    margin-top: 0.5rem;
-  }
-
-  .btn-back:hover { text-decoration: underline; }
-
-  @media (max-width: 768px) {
-    .msg-left { display: none; }
-    .msg-right { padding: 2rem 1.5rem; }
-  }
-</style>
-{% endblock %}
-
-{% block page_content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ title or "Message" }} | Eusol Organics</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { height: 100%; font-family: 'DM Sans', sans-serif; }
+    .msg-wrap { display: flex; min-height: 100vh; }
+    .msg-left {
+      width: 42%; min-height: 100vh; background: #1b3a2d;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 3rem; position: relative; overflow: hidden;
+    }
+    .msg-left::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 10% 90%, rgba(90,138,106,.3) 0%, transparent 45%),
+                  radial-gradient(circle at 90% 10%, rgba(45,90,61,.4) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .msg-brand { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+    .msg-logo { width: 42px; height: 42px; object-fit: contain; }
+    .msg-brand-name { color: #fff; font-size: 17px; font-weight: 600; font-family: 'Playfair Display', serif; }
+    .msg-hero { position: relative; z-index: 1; }
+    .msg-eyebrow { color: #c9a84c; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 1rem; }
+    .msg-heading { color: #fff; font-size: 38px; line-height: 1.2; font-weight: 400; margin-bottom: 1rem; font-family: 'Playfair Display', serif; }
+    .msg-heading em { color: #a8c5b0; font-style: italic; }
+    .msg-body-text { color: rgba(168,197,176,.8); font-size: 14px; line-height: 1.7; font-weight: 300; }
+    .msg-stats { display: flex; gap: 2rem; padding-top: 2rem; border-top: 1px solid rgba(168,197,176,.15); position: relative; z-index: 1; }
+    .msg-stat { display: flex; flex-direction: column; gap: 2px; }
+    .msg-stat-num { color: #fff; font-size: 20px; font-weight: 600; }
+    .msg-stat-lbl { color: rgba(168,197,176,.6); font-size: 11px; }
+    .msg-right { flex: 1; background: #fdfaf4; display: flex; align-items: center; justify-content: center; padding: 3rem; }
+    .msg-content { width: 100%; max-width: 380px; text-align: center; }
+    .msg-icon { width: 64px; height: 64px; border-radius: 50%; background: #1b3a2d; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 28px; color: #fff; }
+    .msg-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: #1b3a2d; margin-bottom: 0.5rem; }
+    .msg-text { font-size: 14px; color: #666; line-height: 1.7; font-weight: 300; margin-bottom: 0.5rem; }
+    .msg-status { font-size: 12px; color: #aaa; margin-bottom: 2rem; }
+    .btn-msg { display: block; width: 100%; padding: 13px; background: #1b3a2d; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; text-decoration: none; text-align: center; margin-bottom: 1rem; }
+    .btn-msg:hover { background: #2d5a3d; color: #fff; }
+    .back-link { display: block; font-size: 13px; color: #5a8a6a; text-decoration: none; margin-top: 0.5rem; }
+    .back-link:hover { text-decoration: underline; }
+    @media (max-width: 768px) { .msg-left { display: none; } .msg-right { padding: 2rem 1.5rem; } }
+  </style>
+</head>
+<body>
 <div class="msg-wrap">
-
-  <!-- LEFT PANEL -->
   <div class="msg-left">
     <div class="msg-brand">
-      <img src="/files/EUSOL--LOGO.png" alt="Eusol Organics" class="msg-logo"
-           onerror="this.style.display='none'" />
+      <img src="/files/EUSOL--LOGO.png" alt="Eusol Organics" class="msg-logo" onerror="this.style.display='none'" />
       <span class="msg-brand-name">Eusol Organics</span>
     </div>
-
     <div class="msg-hero">
       <p class="msg-eyebrow">Business Portal</p>
       <h1 class="msg-heading">Nature's best,<br/><em>delivered with</em><br/>purpose.</h1>
       <p class="msg-body-text">Manage your organic products, inventory, customers, and operations — all in one place.</p>
     </div>
-
     <div class="msg-stats">
       <div class="msg-stat"><span class="msg-stat-num">100%</span><span class="msg-stat-lbl">Organic sourced</span></div>
       <div class="msg-stat"><span class="msg-stat-num">GHS</span><span class="msg-stat-lbl">Local currency</span></div>
       <div class="msg-stat"><span class="msg-stat-num">AUTHENTIC</span><span class="msg-stat-lbl">Based in Ghana</span></div>
-      <div class="eusol-stat"><span class="eusol-stat-num">COOKED BY</span><span class="eusol-stat-lbl">Nana Kwaku</span></div>
     </div>
   </div>
-
-  <!-- RIGHT PANEL -->
   <div class="msg-right">
     <div class="msg-content">
-
       <div class="msg-icon">✉</div>
-
-      {% if title %}
-        <h2 class="msg-title">{{ title }}</h2>
-      {% else %}
-        <h2 class="msg-title">Message</h2>
-      {% endif %}
-
-      {% if message %}
-        <p class="msg-text">{{ message }}</p>
-      {% endif %}
-
-      {% if error_code %}
-        <p class="msg-status">Status: {{ error_code }}</p>
-      {% endif %}
-
+      <h2 class="msg-title">{{ title or "Message" }}</h2>
+      {% if message %}<p class="msg-text">{{ message }}</p>{% endif %}
+      {% if error_code %}<p class="msg-status">Status: {{ error_code }}</p>{% endif %}
       {% if primary_action %}
-        <a href="{{ primary_action }}" class="btn-msg">
-          {{ primary_label or _("Continue") }}
-        </a>
+        <a href="{{ primary_action }}" class="btn-msg">{{ primary_label or "Continue" }}</a>
       {% endif %}
-
-      <a href="/signin" class="btn-back">← Back to sign in</a>
-
+      <a href="/signin" class="back-link">← Back to sign in</a>
     </div>
   </div>
-
 </div>
-
-<script>
-  // Focus the primary action button if present
-  document.addEventListener('DOMContentLoaded', function () {
-    var btn = document.querySelector('.btn-msg');
-    if (btn) btn.focus();
-  });
-</script>
-{% endblock %}
+</body>
+</html>
