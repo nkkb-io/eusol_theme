@@ -1,252 +1,88 @@
-{% extends "templates/web.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scan QR Code | Eusol Organics</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { height: 100%; font-family: 'DM Sans', sans-serif; }
 
-{% block title %}{{ _("Scan QR Code") }} | Eusol Organics{% endblock %}
+    .qr-wrap { display: flex; min-height: 100vh; }
 
-{% block head_include %}
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
-<style>
-  /* Hide Frappe's default navbar/header on this page */
-  .navbar, .web-header, footer.web-footer, .page-header { display: none !important; }
-  body { background: #fdfaf4 !important; margin: 0; padding: 0; }
+    /* ── LEFT PANEL ── */
+    .qr-left {
+      width: 42%; min-height: 100vh; background: #1b3a2d;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 3rem; position: relative; overflow: hidden;
+    }
+    .qr-left::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 10% 90%, rgba(90,138,106,.3) 0%, transparent 45%),
+        radial-gradient(circle at 90% 10%, rgba(45,90,61,.4) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .qr-brand { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+    .qr-logo { width: 42px; height: 42px; object-fit: contain; }
+    .qr-brand-name { color: #fff; font-size: 17px; font-weight: 600; font-family: 'Playfair Display', serif; }
+    .qr-hero { position: relative; z-index: 1; }
+    .qr-eyebrow { color: #c9a84c; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 1rem; }
+    .qr-heading { color: #fff; font-size: 38px; line-height: 1.2; font-weight: 400; margin-bottom: 1rem; font-family: 'Playfair Display', serif; }
+    .qr-heading em { color: #a8c5b0; font-style: italic; }
+    .qr-body-text { color: rgba(168,197,176,.8); font-size: 14px; line-height: 1.7; font-weight: 300; }
+    .qr-stats { display: flex; gap: 2rem; padding-top: 2rem; border-top: 1px solid rgba(168,197,176,.15); position: relative; z-index: 1; }
+    .qr-stat { display: flex; flex-direction: column; gap: 2px; }
+    .qr-stat-num { color: #fff; font-size: 20px; font-weight: 600; }
+    .qr-stat-lbl { color: rgba(168,197,176,.6); font-size: 11px; }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── RIGHT PANEL ── */
+    .qr-right { flex: 1; background: #fdfaf4; display: flex; align-items: center; justify-content: center; padding: 3rem; }
+    .qr-form-wrap { width: 100%; max-width: 420px; }
+    .qr-form-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: #1b3a2d; margin-bottom: 0.25rem; }
+    .qr-form-sub { color: #888; font-size: 13px; margin-bottom: 2rem; }
+    .qr-greeting { font-size: 14px; color: #1b3a2d; font-weight: 500; margin-bottom: 1.5rem; }
 
-  .qr-wrap {
-    display: flex;
-    min-height: 100vh;
-    font-family: 'DM Sans', sans-serif;
-  }
+    /* steps */
+    .qr-steps { display: flex; flex-direction: column; gap: 14px; margin-bottom: 2rem; }
+    .qr-step { display: flex; align-items: flex-start; gap: 14px; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%; background: #1b3a2d;
+      color: #fff; font-size: 13px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .step-text { font-size: 14px; color: #3d3d38; line-height: 1.5; font-weight: 300; padding-top: 4px; }
 
-  /* ── LEFT PANEL ── */
-  .qr-left {
-    width: 42%;
-    min-height: 100vh;
-    background: #1b3a2d;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 3rem;
-    position: relative;
-    overflow: hidden;
-  }
+    /* QR code box */
+    .qr-code-box {
+      background: #fff; border: 1px solid rgba(27,58,45,.15); border-radius: 12px;
+      padding: 20px; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem; width: 100%;
+    }
+    .qr-code-box img { width: 180px; height: 180px; object-fit: contain; }
 
-  .qr-left::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 10% 90%, rgba(90,138,106,.3) 0%, transparent 45%),
-      radial-gradient(circle at 90% 10%, rgba(45,90,61,.4) 0%, transparent 40%);
-    pointer-events: none;
-  }
+    /* apps note */
+    .qr-apps-note {
+      background: #f5f0e4; border-radius: 8px; padding: 14px 16px;
+      font-size: 12px; color: #5a6a62; line-height: 1.6; margin-bottom: 2rem;
+    }
+    .qr-apps-note strong { display: block; color: #1b3a2d; margin-bottom: 4px; font-weight: 500; }
 
-  .qr-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-    z-index: 1;
-  }
+    .btn-back {
+      width: 100%; padding: 13px; background: #1b3a2d; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 500;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+      text-align: center; text-decoration: none; display: block;
+    }
+    .btn-back:hover { background: #2d5a3d; color: #fff; }
 
-  .qr-logo {
-    width: 42px;
-    height: 42px;
-    object-fit: contain;
-  }
+    @media (max-width: 768px) { .qr-left { display: none; } .qr-right { padding: 2rem 1.5rem; } }
+  </style>
+</head>
+<body>
 
-  .qr-brand-name {
-    color: #fff;
-    font-size: 17px;
-    font-weight: 600;
-    font-family: 'Playfair Display', serif;
-  }
-
-  .qr-hero {
-    position: relative;
-    z-index: 1;
-  }
-
-  .qr-eyebrow {
-    color: #c9a84c;
-    font-size: 11px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-
-  .qr-heading {
-    color: #fff;
-    font-size: 38px;
-    line-height: 1.2;
-    font-weight: 400;
-    margin-bottom: 1rem;
-    font-family: 'Playfair Display', serif;
-  }
-
-  .qr-heading em {
-    color: #a8c5b0;
-    font-style: italic;
-  }
-
-  .qr-body-text {
-    color: rgba(168,197,176,.8);
-    font-size: 14px;
-    line-height: 1.7;
-    font-weight: 300;
-  }
-
-  .qr-stats {
-    display: flex;
-    gap: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(168,197,176,.15);
-    position: relative;
-    z-index: 1;
-  }
-
-  .qr-stat { display: flex; flex-direction: column; gap: 2px; }
-  .qr-stat-num { color: #fff; font-size: 20px; font-weight: 600; }
-  .qr-stat-lbl { color: rgba(168,197,176,.6); font-size: 11px; }
-
-  /* ── RIGHT PANEL ── */
-  .qr-right {
-    flex: 1;
-    background: #fdfaf4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-  }
-
-  .qr-form-wrap {
-    width: 100%;
-    max-width: 420px;
-  }
-
-  .qr-form-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 600;
-    color: #1b3a2d;
-    margin-bottom: 0.25rem;
-  }
-
-  .qr-form-sub {
-    color: #888;
-    font-size: 13px;
-    margin-bottom: 2rem;
-  }
-
-  /* greeting */
-  .qr-greeting {
-    font-size: 14px;
-    color: #1b3a2d;
-    font-weight: 500;
-    margin-bottom: 1.5rem;
-  }
-
-  /* steps */
-  .qr-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 2rem;
-  }
-
-  .qr-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-  }
-
-  .step-num {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #1b3a2d;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  .step-text {
-    font-size: 14px;
-    color: #3d3d38;
-    line-height: 1.5;
-    font-weight: 300;
-    padding-top: 4px;
-  }
-
-  /* QR code box */
-  .qr-code-box {
-    background: #fff;
-    border: 1px solid rgba(27,58,45,.15);
-    border-radius: 12px;
-    padding: 20px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-    width: 100%;
-  }
-
-  .qr-code-box img {
-    width: 180px;
-    height: 180px;
-    object-fit: contain;
-  }
-
-  /* apps note */
-  .qr-apps-note {
-    background: #f5f0e4;
-    border-radius: 8px;
-    padding: 14px 16px;
-    font-size: 12px;
-    color: #5a6a62;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-  }
-
-  .qr-apps-note strong {
-    display: block;
-    color: #1b3a2d;
-    margin-bottom: 4px;
-    font-weight: 500;
-  }
-
-  /* back button */
-  .btn-back {
-    width: 100%;
-    padding: 13px;
-    background: #1b3a2d;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    transition: background 0.2s;
-    text-align: center;
-    text-decoration: none;
-    display: block;
-  }
-
-  .btn-back:hover { background: #2d5a3d; color: #fff; }
-
-  @media (max-width: 768px) {
-    .qr-left { display: none; }
-    .qr-right { padding: 2rem 1.5rem; }
-  }
-</style>
-{% endblock %}
-
-{% block page_content %}
 <div class="qr-wrap">
 
   <!-- LEFT PANEL -->
@@ -256,15 +92,11 @@
            onerror="this.style.display='none'" />
       <span class="qr-brand-name">Eusol Organics</span>
     </div>
-
     <div class="qr-hero">
       <p class="qr-eyebrow">Two-Factor Setup</p>
       <h1 class="qr-heading">Secure your<br/><em>account in</em><br/>seconds.</h1>
-      <p class="qr-body-text">
-        Scan the QR code with your authenticator app to enable two-factor login protection.
-      </p>
+      <p class="qr-body-text">Scan the QR code with your authenticator app to enable two-factor login protection.</p>
     </div>
-
     <div class="qr-stats">
       <div class="qr-stat"><span class="qr-stat-num">2FA</span><span class="qr-stat-lbl">Protected</span></div>
       <div class="qr-stat"><span class="qr-stat-num">GHS</span><span class="qr-stat-lbl">Local currency</span></div>
@@ -275,10 +107,8 @@
   <!-- RIGHT PANEL -->
   <div class="qr-right">
     <div class="qr-form-wrap">
-
       <h2 class="qr-form-title">Scan QR Code</h2>
       <p class="qr-form-sub">Set up your authenticator app to complete login</p>
-
       <p class="qr-greeting">Hi {{ qr_code_user.first_name }}, follow the steps below:</p>
 
       <div class="qr-steps">
@@ -296,21 +126,20 @@
         </div>
       </div>
 
-      <!-- QR CODE -->
       <div class="qr-code-box">
         <img src="data:image/svg+xml;base64,{{ qrcode_svg }}" alt="QR Code" />
       </div>
 
-      <!-- Compatible apps note -->
       <div class="qr-apps-note">
         <strong>Compatible authenticator apps</strong>
         Google Authenticator, Authy, Microsoft Authenticator, LastPass Authenticator, FreeOTP, Duo Mobile.
       </div>
 
       <a href="/signin" class="btn-back">← Back to sign in</a>
-
     </div>
   </div>
 
 </div>
-{% endblock %}
+
+</body>
+</html>
