@@ -1,58 +1,77 @@
 // ── Eusol Organics — Desk Override ──
-
 frappe.ready(function() {
+
+    var BRAND_NAME = "Eusol Organics";
+
+    var RENAME_MAP = {
+        "ERPNext Settings": "Configuration",
+        "Frappe HR": "HR",
+        "Frappe Framework": BRAND_NAME,
+        "ERPNext": BRAND_NAME,
+        "Frappe": BRAND_NAME
+    };
+
+    function renameTextNodes(root) {
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+        var node;
+        while ((node = walker.nextNode())) {
+            var text = node.nodeValue;
+            if (!text || !text.trim()) continue;
+            for (var key in RENAME_MAP) {
+                if (text.indexOf(key) !== -1) {
+                    node.nodeValue = text.split(key).join(RENAME_MAP[key]);
+                }
+            }
+        }
+    }
+
+    function runRename() {
+        renameTextNodes(document.body);
+    }
 
     // ── Browser tab title ──
     var origTitle = document.title;
     if (origTitle) {
-        document.title = origTitle.replace('Frappe', 'Eusol Organics').replace('ERPNext', 'Eusol Organics');
+        document.title = origTitle.replace('Frappe', BRAND_NAME).replace('ERPNext', BRAND_NAME);
     }
-
-    // Override frappe.ui.set_title if available
     if (frappe && frappe.ui && frappe.ui.set_title) {
         var _origSetTitle = frappe.ui.set_title;
         frappe.ui.set_title = function(title, subtitle, merge) {
             _origSetTitle.call(this, title, subtitle, merge);
             document.title = document.title
-                .replace(' - Frappe', ' — Eusol Organics')
-                .replace(' - ERPNext', ' — Eusol Organics')
-                .replace('Frappe', 'Eusol Organics')
-                .replace('ERPNext', 'Eusol Organics');
+                .replace(' - Frappe', ' — ' + BRAND_NAME)
+                .replace(' - ERPNext', ' — ' + BRAND_NAME)
+                .replace('Frappe', BRAND_NAME)
+                .replace('ERPNext', BRAND_NAME);
         };
     }
 
-    // ── Navbar logo replacement ──
-    frappe.after_ajax(function() {
-        // Replace navbar brand text if present
-        var brandEls = document.querySelectorAll('.navbar-brand, .navbar-home');
-        brandEls.forEach(function(el) {
-            var img = el.querySelector('img');
-            if (img && !img.src.includes('EUSOL')) {
+    // ── Navbar / sidebar logo replacement ──
+    function replaceLogos() {
+        var brandEls = document.querySelectorAll('.navbar-brand, .navbar-home, .sidebar-header img, .header-logo img');
+        brandEls.forEach(function(img) {
+            if (img.tagName === 'IMG' && !img.src.includes('EUSOL')) {
                 img.src    = '/files/EUSOL--LOGO.png';
-                img.alt    = 'Eusol Organics';
-                img.style.height = '28px';
-                img.style.width  = 'auto';
+                img.alt    = BRAND_NAME;
                 img.onerror = function() { this.style.display = 'none'; };
             }
         });
+    }
 
-        // Replace "Guest" or username display with friendly name
-        var userEl = document.querySelector('.navbar .user-name, .navbar .dropdown-toggle .user-name');
-        if (userEl && frappe.session && frappe.session.user) {
-            // keep as-is — ERPNext handles this
-        }
+    // Run rename + logo replace on every route change (desk is a SPA)
+    frappe.router.on('change', function() {
+        setTimeout(function() { runRename(); replaceLogos(); }, 150);
+        setTimeout(function() { runRename(); replaceLogos(); }, 600);
     });
 
-    // ── Add "Home" link to navbar pointing to /home ──
-    frappe.after_ajax(function() {
-        var navbar = document.querySelector('.navbar-nav');
-        if (navbar && !document.getElementById('eusol-home-link')) {
-            var li = document.createElement('li');
-            li.className = 'nav-item';
-            li.id = 'eusol-home-link';
-            li.innerHTML = '<a class="nav-link" href="/home" style="color:rgba(255,255,255,0.75);font-size:13px;display:flex;align-items:center;gap:5px;"><span>🏠</span> Dashboard</a>';
-            navbar.insertBefore(li, navbar.firstChild);
-        }
+    // Run on initial load too
+    setTimeout(function() { runRename(); replaceLogos(); }, 300);
+    setTimeout(function() { runRename(); replaceLogos(); }, 1000);
+
+    // Catch dynamically rendered content (module cards, sidebar, dialogs, "About" popup etc.)
+    var observer = new MutationObserver(function() {
+        runRename();
     });
+    observer.observe(document.body, { childList: true, subtree: true });
 
 });
