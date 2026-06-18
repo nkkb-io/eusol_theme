@@ -1,82 +1,165 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+/* ============================================================
+   EUSOL — ERPNext Desk Theme (v2)
+   A calmer, editorial take: green as an accent, not a wall.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap');
 
 :root {
+  /* Brand palette — same hues, used more sparingly */
   --eusol-green: #1b3a2d;
   --eusol-green-mid: #2a5240;
   --eusol-green-light: #5a8a6a;
-  --eusol-cream: #f5f0e8;
+  --eusol-green-pale: #e9efe9;   /* new: for tints/backgrounds */
+  --eusol-cream: #f7f4ee;
   --eusol-gold: #c9a84c;
+  --eusol-gold-pale: #f3ead0;
+
+  /* Neutrals carry the page now, green is the accent */
+  --eusol-ink: #232323;
+  --eusol-ink-soft: #5c5c5c;
+  --eusol-border: #e6e1d6;
+  --eusol-white: #ffffff;
 }
 
-/* ── SIDEBAR ── */
+/* Base type */
+body, .navbar, .form-control, .control-label, .ce-paragraph {
+  font-family: 'DM Sans', -apple-system, sans-serif !important;
+}
+
+/* ── SIDEBAR — dark neutral with green used only as accent line/active state ── */
 .body-sidebar {
-  background: var(--eusol-green) !important;
+  background: #1f2421 !important;     /* near-black green-grey, not solid brand green */
+  border-right: 1px solid rgba(255,255,255,0.06) !important;
 }
-
 .sidebar-header {
-  background: var(--eusol-green) !important;
+  background: #1f2421 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  padding-top: 18px !important;
 }
 
-/* Sidebar item text - high contrast */
+/* Logo moved here via sidebar_logo.js — sits above the workspace switcher */
+.body-sidebar .eusol-sidebar-logo {
+  order: -1;
+  display: flex !important;
+  align-items: center;
+  padding: 0 16px 14px 16px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  width: 100%;
+}
+.body-sidebar .eusol-sidebar-logo img {
+  max-height: 28px;
+  width: auto;
+}
+.body-sidebar .eusol-sidebar-logo span,
+.body-sidebar .eusol-sidebar-logo a {
+  color: #ffffff !important;
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 600 !important;
+}
+
 .body-sidebar .sidebar-item-label,
 .body-sidebar a,
-.body-sidebar span,
-.body-sidebar div {
-  color: rgba(255,255,255,0.85) !important;
+.body-sidebar span {
+  color: rgba(255,255,255,0.72) !important;
+  font-weight: 400 !important;
 }
 
+/* Active/hover: thin gold left-rule instead of a big green block */
 .body-sidebar .sidebar-item:hover,
 .body-sidebar .sidebar-item.selected {
-  background: rgba(255,255,255,0.15) !important;
+  background: rgba(255,255,255,0.06) !important;
+  border-left: 2px solid var(--eusol-gold) !important;
 }
-
 .body-sidebar .sidebar-item:hover *,
 .body-sidebar .sidebar-item.selected * {
   color: #ffffff !important;
 }
 
-/* Icons in sidebar */
 .body-sidebar svg {
-  color: rgba(255,255,255,0.7) !important;
-  stroke: rgba(255,255,255,0.7) !important;
+  color: rgba(255,255,255,0.5) !important;
+  stroke: rgba(255,255,255,0.5) !important;
   fill: none !important;
 }
-
 .body-sidebar .sidebar-item:hover svg,
 .body-sidebar .sidebar-item.selected svg {
-  color: #fff !important;
-  stroke: #fff !important;
+  color: var(--eusol-gold) !important;
+  stroke: var(--eusol-gold) !important;
 }
 
-/* ── MAIN CONTENT (do not touch widget backgrounds, just page bg) ── */
+/* ── MAIN CONTENT ── */
 .main-section {
   background: var(--eusol-cream) !important;
 }
 
-/* ── PAGE HEAD ── */
+/* ── PAGE HEAD — quieter, with a thin gold underline instead of full green ── */
 .page-head {
-  background: #ffffff !important;
+  background: var(--eusol-white) !important;
+  border-bottom: 1px solid var(--eusol-border) !important;
+  box-shadow: none !important;
 }
-
 .page-title .title-text {
   font-family: 'Playfair Display', serif !important;
-  color: var(--eusol-green) !important;
+  font-weight: 600 !important;
+  color: var(--eusol-ink) !important;        /* dark neutral, not loud green */
+  letter-spacing: 0.2px;
+}
+/* Optional accent: a slim gold rule under the title block */
+.page-head .title-area {
+  border-bottom: 2px solid transparent;
 }
 
-/* ── BUTTONS ── */
+/* ── BUTTONS — green kept only on primary actions ── */
 .btn-primary {
+  background: var(--eusol-green-mid) !important;
+  border-color: var(--eusol-green-mid) !important;
+  font-weight: 500 !important;
+}
+.btn-primary:hover {
   background: var(--eusol-green) !important;
   border-color: var(--eusol-green) !important;
 }
-
-.btn-primary:hover {
-  background: var(--eusol-green-mid) !important;
-  border-color: var(--eusol-green-mid) !important;
+.btn-default {
+  border-color: var(--eusol-border) !important;
+  color: var(--eusol-ink) !important;
 }
 
-/* ── DASHBOARD/CHART CARDS keep white, just round corners ── */
+/* Subtle gold for secondary emphasis (e.g. "Save" indicator dot, badges) */
+.indicator.orange, .indicator.yellow {
+  background: var(--eusol-gold) !important;
+}
+
+/* ── CARDS / WIDGETS — soft border instead of pure white-on-cream flatness ── */
 .widget,
 .chart-container,
 .dashboard-chart {
   border-radius: 10px !important;
+  border: 1px solid var(--eusol-border) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+}
+
+/* Section headers inside forms — small green accent label, not a block */
+.form-section .section-head {
+  color: var(--eusol-green-mid) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+/* Table headers — pale green tint instead of grey, ties palette together subtly */
+.list-row-head, .frappe-list .list-row-head {
+  background: var(--eusol-green-pale) !important;
+}
+
+/* Links/active nav text in pale gold tint for hierarchy */
+a {
+  color: var(--eusol-green-mid);
+}
+a:hover {
+  color: var(--eusol-green);
 }
