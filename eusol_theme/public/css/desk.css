@@ -191,3 +191,20 @@ a {
 a:hover {
   color: var(--eusol-green);
 }
+/* ── SIDEBAR CONTRAST FIX ── */
+.body-sidebar .sidebar-item:hover .sidebar-item-label,
+.body-sidebar .sidebar-item.selected .sidebar-item-label,
+.body-sidebar .sidebar-item:hover .header-title,
+.body-sidebar .sidebar-item.selected .header-title,
+.body-sidebar .sidebar-item:hover .header-subtitle,
+.body-sidebar .sidebar-item.selected .header-subtitle {
+  color: #ffffff !important;
+}
+
+.body-sidebar .header-subtitle {
+  color: rgba(255,255,255,0.55) !important;
+}
+
+.body-sidebar .header-title {
+  color: rgba(255,255,255,0.9) !important;
+}
