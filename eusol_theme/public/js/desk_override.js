@@ -102,7 +102,7 @@ frappe.ready(function() {
     // Run on initial load
     scheduleRun();
 
-    // Watch for dynamic content, but debounced so it only fires once
+    // Watch for dynamic content, but debounced so it only fires once      
     // after the DOM settles, not on every single mutation
     var observer = new MutationObserver(function() {
         scheduleRun();
@@ -110,3 +110,12 @@ frappe.ready(function() {
     observer.observe(document.body, { childList: true, subtree: true });
 
 });
+
+   function fixHeaderSubtitle() {
+        var subtitles = document.querySelectorAll('.header-subtitle');
+            subtitles.forEach(function(el) {
+        if (el.textContent.indexOf('ERPNext') !== -1) {
+            el.textContent = el.textContent.replace('ERPNext', BRAND_NAME);
+        }
+    });
+}
