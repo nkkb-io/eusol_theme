@@ -22,13 +22,10 @@ web_include_css = [
     "https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap",
 ]
 
-# ── Override app title shown in browser tab ──
 app_include_js = [
     "/assets/eusol_theme/js/desk_override.js",
+    "/assets/eusol_theme/js/sidebar_logo.js"
 ]
 
 # ── Favicon ──
 favicon = "/files/EUSOL--LOGO.png"
-
-# ── Sidebar Logo ──
-app_include_js = ["/assets/your_app_name/js/sidebar_logo.js"]
