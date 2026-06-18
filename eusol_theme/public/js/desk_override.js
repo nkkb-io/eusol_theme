@@ -96,25 +96,33 @@ frappe.ready(function() {
         });
     }
 
-    // ── Debounced runner so we don't fight Frappe's own re-renders ──
-    var debounceTimer = null;
-    function scheduleRun() {
-        if (debounceTimer) clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(function() {
+    // ── Debounced runner ──
+var debounceTimer = null;
+function scheduleRun() {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function() {
+        runRename();
+        replaceLogos();
+    }, 400);
+}
+
+// Also run with longer delays to catch late-rendered elements
+function scheduleFullRun() {
+    [400, 800, 1500, 3000].forEach(function(delay) {
+        setTimeout(function() {
             runRename();
             replaceLogos();
-        }, 400);
-    }
-
-    frappe.router.on('change', function() {
-        scheduleRun();
+        }, delay);
     });
+}
 
-    scheduleRun();
-
-    var observer = new MutationObserver(function() {
-        scheduleRun();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-
+frappe.router.on('change', function() {
+    scheduleFullRun();
 });
+
+scheduleFullRun();
+
+var observer = new MutationObserver(function() {
+    scheduleRun();
+});
+observer.observe(document.body, { childList: true, subtree: true });
