@@ -1,5 +1,5 @@
 /* ============================================================
-   EUSOL — ERPNext Desk Theme (v3)
+   EUSOL — ERPNext Desk Theme 
    Flat, uniform sidebar. No floating cards. Fixed text contrast.
    ============================================================ */
 
@@ -13,7 +13,7 @@
   --eusol-gold: #c9a84c;
 }
 
-/* ── SIDEBAR ── */
+/* ── SIDEBAR BACKGROUND ── */
 .body-sidebar {
   background: var(--eusol-green) !important;
 }
@@ -22,56 +22,77 @@
   background: var(--eusol-green) !important;
 }
 
-/* Sidebar item text - high contrast */
-.body-sidebar .sidebar-item-label,
-.body-sidebar a,
-.body-sidebar span,
-.body-sidebar div {
-  color: rgba(255,255,255,0.85) !important;
+/* ── SIDEBAR LOGO ── */
+.header-logo {
+  background-image: url('/files/EUSOL--LOGO.png') !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  border-radius: 8px !important;
+}
+.header-logo svg,
+.header-logo img,
+.header-logo .icon {
+  display: none !important;
 }
 
-.body-sidebar .sidebar-item:hover,
-.body-sidebar .sidebar-item.selected {
-  background: rgba(255,255,255,0.15) !important;
-}
-
-.body-sidebar .sidebar-item:hover *,
-.body-sidebar .sidebar-item.selected * {
-  color: #ffffff !important;
-}
-
-/* ── SIDEBAR CONTRAST FIX ── */
-.body-sidebar .sidebar-item:hover .sidebar-item-label,
-.body-sidebar .sidebar-item.selected .sidebar-item-label,
-.body-sidebar .sidebar-item:hover .header-title,
-.body-sidebar .sidebar-item.selected .header-title,
-.body-sidebar .sidebar-item:hover .header-subtitle,
-.body-sidebar .sidebar-item.selected .header-subtitle {
-  color: #ffffff !important;
-}
-
-.body-sidebar .header-subtitle {
-  color: rgba(255,255,255,0.55) !important;
+/* ── SIDEBAR DEFAULT TEXT ── */
+.body-sidebar .sidebar-item-label {
+  color: rgba(255,255,255,0.75) !important;
 }
 
 .body-sidebar .header-title {
   color: rgba(255,255,255,0.9) !important;
 }
 
-/* Icons in sidebar */
+.body-sidebar .header-subtitle {
+  color: rgba(255,255,255,0.55) !important;
+}
+
 .body-sidebar svg {
-  color: rgba(255,255,255,0.7) !important;
-  stroke: rgba(255,255,255,0.7) !important;
+  color: rgba(255,255,255,0.6) !important;
+  stroke: rgba(255,255,255,0.6) !important;
   fill: none !important;
 }
 
-.body-sidebar .sidebar-item:hover svg,
-.body-sidebar .sidebar-item.selected svg {
-  color: #fff !important;
-  stroke: #fff !important;
+.body-sidebar [class*="text-ink-gray"] {
+  color: rgba(255,255,255,0.75) !important;
 }
 
-/* ── MAIN CONTENT (do not touch widget backgrounds, just page bg) ── */
+/* ── SIDEBAR HOVER STATE — light dark forest green ── */
+.body-sidebar .standard-sidebar-item:hover {
+  background: #2d5a3d !important;
+  border-radius: 6px !important;
+}
+
+.body-sidebar .standard-sidebar-item:hover .sidebar-item-label,
+.body-sidebar .standard-sidebar-item:hover [class*="text-ink-gray"] {
+  color: #ffffff !important;
+}
+
+.body-sidebar .standard-sidebar-item:hover svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* ── SIDEBAR SELECTED/ACTIVE STATE — dark forest green ── */
+.body-sidebar .standard-sidebar-item.active-sidebar {
+  background: #163020 !important;
+  border-radius: 6px !important;
+  border-left: 3px solid var(--eusol-gold) !important;
+}
+
+.body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-label,
+.body-sidebar .standard-sidebar-item.active-sidebar [class*="text-ink-gray"] {
+  color: #ffffff !important;
+}
+
+.body-sidebar .standard-sidebar-item.active-sidebar svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* ── MAIN CONTENT ── */
 .main-section {
   background: var(--eusol-cream) !important;
 }
@@ -97,25 +118,9 @@
   border-color: var(--eusol-green-mid) !important;
 }
 
-/* ── DASHBOARD/CHART CARDS keep white, just round corners ── */
+/* ── CARDS / WIDGETS ── */
 .widget,
 .chart-container,
 .dashboard-chart {
   border-radius: 10px !important;
-}
-
-/* ── SIDEBAR LOGO ── */
-.header-logo {
-  background-image: url('/files/EUSOL--LOGO.png') !important;
-  background-size: contain !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  border-radius: 8px !important;
-}
-
-/* Hide the default ERPNext SVG icon inside it */
-.header-logo svg,
-.header-logo img,
-.header-logo .icon {
-  display: none !important;
 }
