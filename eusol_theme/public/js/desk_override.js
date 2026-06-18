@@ -3,30 +3,56 @@ frappe.ready(function() {
 
     var BRAND_NAME = "Eusol Organics";
 
-    var RENAME_MAP = {
-        "ERPNext Settings": "Configuration",
-        "Frappe HR": "HR",
-        "Frappe Framework": BRAND_NAME,
-        "ERPNext": BRAND_NAME,
-        "Frappe": BRAND_NAME
-    };
+    var RENAME_MAP = [
+        ["ERPNext Settings", "Configuration"],
+        ["Frappe HR", "HR"],
+        ["Frappe Framework", BRAND_NAME],
+        ["ERPNext", BRAND_NAME],
+        ["Frappe", BRAND_NAME]
+    ];
+
+    var SKIP_TAGS = ["SCRIPT", "STYLE", "INPUT", "TEXTAREA", "SELECT"];
 
     function renameTextNodes(root) {
-        var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode: function(node) {
+                var parentTag = node.parentNode && node.parentNode.tagName;
+                if (parentTag && SKIP_TAGS.indexOf(parentTag) !== -1) {
+                    return NodeFilter.FILTER_REJECT;
+                }
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        }, false);
+
         var node;
+        var nodesToUpdate = [];
         while ((node = walker.nextNode())) {
             var text = node.nodeValue;
             if (!text || !text.trim()) continue;
-            for (var key in RENAME_MAP) {
-                if (text.indexOf(key) !== -1) {
-                    node.nodeValue = text.split(key).join(RENAME_MAP[key]);
+            var newText = text;
+            for (var i = 0; i < RENAME_MAP.length; i++) {
+                var from = RENAME_MAP[i][0];
+                var to = RENAME_MAP[i][1];
+                if (newText.indexOf(from) !== -1) {
+                    newText = newText.split(from).join(to);
                 }
             }
+            if (newText !== text) {
+                nodesToUpdate.push([node, newText]);
+            }
         }
+        // Apply changes after walking, to avoid mutating the tree mid-walk
+        nodesToUpdate.forEach(function(pair) {
+            pair[0].nodeValue = pair[1];
+        });
     }
 
     function runRename() {
-        renameTextNodes(document.body);
+        try {
+            renameTextNodes(document.body);
+        } catch (e) {
+            // fail silently, never break the desk
+        }
     }
 
     // ── Browser tab title ──
@@ -48,9 +74,9 @@ frappe.ready(function() {
 
     // ── Navbar / sidebar logo replacement ──
     function replaceLogos() {
-        var brandEls = document.querySelectorAll('.navbar-brand, .navbar-home, .sidebar-header img, .header-logo img');
+        var brandEls = document.querySelectorAll('.navbar-brand img, .navbar-home img, .sidebar-header img, .header-logo img');
         brandEls.forEach(function(img) {
-            if (img.tagName === 'IMG' && !img.src.includes('EUSOL')) {
+            if (!img.src.includes('EUSOL')) {
                 img.src    = '/files/EUSOL--LOGO.png';
                 img.alt    = BRAND_NAME;
                 img.onerror = function() { this.style.display = 'none'; };
@@ -58,19 +84,28 @@ frappe.ready(function() {
         });
     }
 
-    // Run rename + logo replace on every route change (desk is a SPA)
+    // ── Debounced runner so we don't fight Frappe's own re-renders ──
+    var debounceTimer = null;
+    function scheduleRun() {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function() {
+            runRename();
+            replaceLogos();
+        }, 400);
+    }
+
+    // Run on route change
     frappe.router.on('change', function() {
-        setTimeout(function() { runRename(); replaceLogos(); }, 150);
-        setTimeout(function() { runRename(); replaceLogos(); }, 600);
+        scheduleRun();
     });
 
-    // Run on initial load too
-    setTimeout(function() { runRename(); replaceLogos(); }, 300);
-    setTimeout(function() { runRename(); replaceLogos(); }, 1000);
+    // Run on initial load
+    scheduleRun();
 
-    // Catch dynamically rendered content (module cards, sidebar, dialogs, "About" popup etc.)
+    // Watch for dynamic content, but debounced so it only fires once
+    // after the DOM settles, not on every single mutation
     var observer = new MutationObserver(function() {
-        runRename();
+        scheduleRun();
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
