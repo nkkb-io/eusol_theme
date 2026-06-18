@@ -41,15 +41,27 @@ frappe.ready(function() {
                 nodesToUpdate.push([node, newText]);
             }
         }
-        // Apply changes after walking, to avoid mutating the tree mid-walk
         nodesToUpdate.forEach(function(pair) {
             pair[0].nodeValue = pair[1];
+        });
+    }
+
+    function fixHeaderSubtitle() {
+        var subtitles = document.querySelectorAll('.header-subtitle');
+        subtitles.forEach(function(el) {
+            if (el.textContent.indexOf('ERPNext') !== -1) {
+                el.textContent = el.textContent.replace('ERPNext', BRAND_NAME);
+            }
+            if (el.textContent.indexOf('Frappe') !== -1) {
+                el.textContent = el.textContent.replace('Frappe', BRAND_NAME);
+            }
         });
     }
 
     function runRename() {
         try {
             renameTextNodes(document.body);
+            fixHeaderSubtitle();
         } catch (e) {
             // fail silently, never break the desk
         }
@@ -94,28 +106,15 @@ frappe.ready(function() {
         }, 400);
     }
 
-    // Run on route change
     frappe.router.on('change', function() {
         scheduleRun();
     });
 
-    // Run on initial load
     scheduleRun();
 
-    // Watch for dynamic content, but debounced so it only fires once      
-    // after the DOM settles, not on every single mutation
     var observer = new MutationObserver(function() {
         scheduleRun();
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
 });
-
-   function fixHeaderSubtitle() {
-        var subtitles = document.querySelectorAll('.header-subtitle');
-            subtitles.forEach(function(el) {
-        if (el.textContent.indexOf('ERPNext') !== -1) {
-            el.textContent = el.textContent.replace('ERPNext', BRAND_NAME);
-        }
-    });
-}
