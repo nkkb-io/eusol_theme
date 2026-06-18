@@ -103,3 +103,19 @@
 .dashboard-chart {
   border-radius: 10px !important;
 }
+
+/* ── SIDEBAR LOGO ── */
+.header-logo {
+  background-image: url('/files/EUSOL--LOGO.png') !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  border-radius: 8px !important;
+}
+
+/* Hide the default ERPNext SVG icon inside it */
+.header-logo svg,
+.header-logo img,
+.header-logo .icon {
+  display: none !important;
+}
