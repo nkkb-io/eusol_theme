@@ -1,78 +1,105 @@
 /* ============================================================
-   EUSOL — ERPNext Desk Theme (v2)
-   A calmer, editorial take: green as an accent, not a wall.
+   EUSOL — ERPNext Desk Theme (v3)
+   Flat, uniform sidebar. No floating cards. Fixed text contrast.
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap');
 
 :root {
-  /* Brand palette — same hues, used more sparingly */
   --eusol-green: #1b3a2d;
   --eusol-green-mid: #2a5240;
   --eusol-green-light: #5a8a6a;
-  --eusol-green-pale: #e9efe9;   /* new: for tints/backgrounds */
+  --eusol-green-pale: #e9efe9;
   --eusol-cream: #f7f4ee;
   --eusol-gold: #c9a84c;
   --eusol-gold-pale: #f3ead0;
 
-  /* Neutrals carry the page now, green is the accent */
   --eusol-ink: #232323;
   --eusol-ink-soft: #5c5c5c;
   --eusol-border: #e6e1d6;
   --eusol-white: #ffffff;
+
+  /* single source of truth for the sidebar color so every
+     sidebar sub-element can reference the SAME value */
+  --eusol-sidebar-bg: #1f2421;
+  --eusol-sidebar-text: rgba(255,255,255,0.82);
+  --eusol-sidebar-text-dim: rgba(255,255,255,0.55);
 }
 
-/* Base type */
 body, .navbar, .form-control, .control-label, .ce-paragraph {
   font-family: 'DM Sans', -apple-system, sans-serif !important;
 }
 
-/* ── SIDEBAR — dark neutral with green used only as accent line/active state ── */
+/* ── SIDEBAR — force ONE flat color on every layer of the sidebar,
+   including any inner wrapper Frappe renders, so nothing shows
+   through as a lighter/white panel. ── */
+.body-sidebar,
+.body-sidebar .sidebar-header,
+.body-sidebar .standard-sidebar-section,
+.body-sidebar .sidebar-item-container,
+.body-sidebar .sidebar-item-control,
+.body-sidebar .desk-sidebar,
+.body-sidebar .sidebar-image-wrapper,
+.body-sidebar > div,
+.body-sidebar .app-switcher-dropdown,
+.body-sidebar .dropdown-toggle {
+  background: var(--eusol-sidebar-bg) !important;
+  background-color: var(--eusol-sidebar-bg) !important;
+  box-shadow: none !important;
+}
+
 .body-sidebar {
-  background: #1f2421 !important;     /* near-black green-grey, not solid brand green */
   border-right: 1px solid rgba(255,255,255,0.06) !important;
 }
-.sidebar-header {
-  background: #1f2421 !important;
-  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  padding-top: 18px !important;
+.body-sidebar .sidebar-header {
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
 }
 
-/* Logo moved here via sidebar_logo.js — sits above the workspace switcher */
-.body-sidebar .eusol-sidebar-logo {
-  order: -1;
-  display: flex !important;
-  align-items: center;
-  padding: 0 16px 14px 16px;
-  margin-bottom: 6px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  width: 100%;
+/* App/workspace switcher button at top — strip its default white pill
+   styling so it reads as part of the flat sidebar, not a card */
+.body-sidebar .sidebar-header .dropdown-toggle,
+.body-sidebar .sidebar-header button,
+.body-sidebar .sidebar-header .btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--eusol-sidebar-text) !important;
 }
-.body-sidebar .eusol-sidebar-logo img {
-  max-height: 28px;
-  width: auto;
-}
-.body-sidebar .eusol-sidebar-logo span,
-.body-sidebar .eusol-sidebar-logo a {
-  color: #ffffff !important;
-  font-family: 'Playfair Display', serif !important;
-  font-weight: 600 !important;
+.body-sidebar .sidebar-header img {
+  filter: brightness(0) invert(1); /* make logo mark white if it's dark/colored */
 }
 
+/* ── TEXT — maximum-specificity catch-all so default (non-hover)
+   state is ALWAYS legible. Frappe's own sidebar-item-label rule
+   is fairly specific, so we match its exact structure too. ── */
+.body-sidebar,
+.body-sidebar *,
 .body-sidebar .sidebar-item-label,
-.body-sidebar a,
-.body-sidebar span {
-  color: rgba(255,255,255,0.72) !important;
+.body-sidebar a.sidebar-item-label,
+.body-sidebar div.sidebar-item-label,
+.body-sidebar .sidebar-item .sidebar-item-label,
+.body-sidebar .sidebar-item:not(:hover):not(.selected) .sidebar-item-label,
+.body-sidebar .sidebar-item:not(:hover):not(.selected) a,
+.body-sidebar .sidebar-item:not(:hover):not(.selected) span,
+.body-sidebar .standard-sidebar-section .sidebar-item-label {
+  color: var(--eusol-sidebar-text) !important;
   font-weight: 400 !important;
+  opacity: 1 !important;
 }
 
-/* Active/hover: thin gold left-rule instead of a big green block */
+/* Defensive: some Frappe sidebar builds fade inactive items via
+   opacity or visibility rather than just color — force them visible */
+.body-sidebar .sidebar-item,
+.body-sidebar .sidebar-item-label,
+.body-sidebar .sidebar-item * {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Active / hover state */
 .body-sidebar .sidebar-item:hover,
 .body-sidebar .sidebar-item.selected {
-  background: rgba(255,255,255,0.06) !important;
+  background: rgba(255,255,255,0.08) !important;
   border-left: 2px solid var(--eusol-gold) !important;
 }
 .body-sidebar .sidebar-item:hover *,
@@ -81,8 +108,8 @@ body, .navbar, .form-control, .control-label, .ce-paragraph {
 }
 
 .body-sidebar svg {
-  color: rgba(255,255,255,0.5) !important;
-  stroke: rgba(255,255,255,0.5) !important;
+  color: var(--eusol-sidebar-text-dim) !important;
+  stroke: var(--eusol-sidebar-text-dim) !important;
   fill: none !important;
 }
 .body-sidebar .sidebar-item:hover svg,
@@ -91,29 +118,34 @@ body, .navbar, .form-control, .control-label, .ce-paragraph {
   stroke: var(--eusol-gold) !important;
 }
 
-/* ── MAIN CONTENT ── */
-.main-section {
+/* ── MAIN CONTENT — one flat color across the whole main area,
+   including the page head, the breadcrumb strip, and any wrapper
+   divs Frappe renders in between, so there's no white/cream seam ── */
+.main-section,
+.page-head,
+.page-container,
+.content,
+.container,
+.page-body,
+.layout-main,
+.layout-main-section-wrapper,
+.layout-main-section,
+.standard-main-section,
+body {
   background: var(--eusol-cream) !important;
-}
-
-/* ── PAGE HEAD — quieter, with a thin gold underline instead of full green ── */
-.page-head {
-  background: var(--eusol-white) !important;
-  border-bottom: 1px solid var(--eusol-border) !important;
   box-shadow: none !important;
+}
+.page-head {
+  border-bottom: 1px solid var(--eusol-border) !important;
 }
 .page-title .title-text {
   font-family: 'Playfair Display', serif !important;
   font-weight: 600 !important;
-  color: var(--eusol-ink) !important;        /* dark neutral, not loud green */
+  color: var(--eusol-ink) !important;
   letter-spacing: 0.2px;
 }
-/* Optional accent: a slim gold rule under the title block */
-.page-head .title-area {
-  border-bottom: 2px solid transparent;
-}
 
-/* ── BUTTONS — green kept only on primary actions ── */
+/* ── BUTTONS ── */
 .btn-primary {
   background: var(--eusol-green-mid) !important;
   border-color: var(--eusol-green-mid) !important;
@@ -128,12 +160,11 @@ body, .navbar, .form-control, .control-label, .ce-paragraph {
   color: var(--eusol-ink) !important;
 }
 
-/* Subtle gold for secondary emphasis (e.g. "Save" indicator dot, badges) */
 .indicator.orange, .indicator.yellow {
   background: var(--eusol-gold) !important;
 }
 
-/* ── CARDS / WIDGETS — soft border instead of pure white-on-cream flatness ── */
+/* ── CARDS / WIDGETS ── */
 .widget,
 .chart-container,
 .dashboard-chart {
@@ -142,7 +173,6 @@ body, .navbar, .form-control, .control-label, .ce-paragraph {
   box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
 }
 
-/* Section headers inside forms — small green accent label, not a block */
 .form-section .section-head {
   color: var(--eusol-green-mid) !important;
   font-weight: 600 !important;
@@ -151,12 +181,10 @@ body, .navbar, .form-control, .control-label, .ce-paragraph {
   letter-spacing: 0.04em;
 }
 
-/* Table headers — pale green tint instead of grey, ties palette together subtly */
 .list-row-head, .frappe-list .list-row-head {
   background: var(--eusol-green-pale) !important;
 }
 
-/* Links/active nav text in pale gold tint for hierarchy */
 a {
   color: var(--eusol-green-mid);
 }
