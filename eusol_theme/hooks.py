@@ -29,3 +29,6 @@ app_include_js = [
 
 # ── Favicon ──
 favicon = "/files/EUSOL--LOGO.png"
+
+# ── Sidebar Logo ──
+app_include_js = ["/assets/your_app_name/js/sidebar_logo.js"]
