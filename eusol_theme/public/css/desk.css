@@ -159,3 +159,33 @@
   border-radius: 10px !important;
   box-shadow: 0 2px 8px rgba(27,58,45,0.06) !important;
 }
+
+/* ── SIDEBAR BOTTOM — Getting Started & Administrator ── */
+.body-sidebar .onboarding-sidebar {
+  background: rgba(255,255,255,0.08) !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+}
+
+.body-sidebar .onboarding-sidebar * {
+  color: rgba(255,255,255,0.85) !important;
+}
+
+/* Administrator name */
+.body-sidebar .d-block.text-truncate {
+  color: rgba(255,255,255,0.9) !important;
+}
+
+/* Administrator email/subtitle */
+.body-sidebar .d-block.text-secondary.text-truncate {
+  color: rgba(255,255,255,0.55) !important;
+}
+
+/* Override Frappe's text-secondary utility inside sidebar */
+.body-sidebar .text-secondary {
+  color: rgba(255,255,255,0.55) !important;
+}
+
+.body-sidebar .text-muted {
+  color: rgba(255,255,255,0.55) !important;
+}
