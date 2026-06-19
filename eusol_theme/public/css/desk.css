@@ -1,6 +1,9 @@
 /* ============================================================
-   EUSOL — ERPNext Desk Theme 
+   EUSOL — ERPNext Desk Theme
    Flat, uniform sidebar. No floating cards. Fixed text contrast.
+   FIX: removed layout-affecting overrides on .list-row /
+   .list-row-container / .form-layout that were causing pages
+   to stretch left (these are structural rows, not card surfaces).
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
@@ -55,11 +58,17 @@
   fill: none !important;
 }
 
-.body-sidebar [class*="text-ink-gray"] {
+/* NOTE: scoped down to text/span/a/div only — the original
+   wildcard `[class*="text-ink-gray"]` with no tag restriction
+   risks matching nested menus/tooltips/modals rendered inside
+   the sidebar DOM tree, not just sidebar nav text. */
+.body-sidebar a[class*="text-ink-gray"],
+.body-sidebar span[class*="text-ink-gray"],
+.body-sidebar div[class*="text-ink-gray"] {
   color: rgba(255,255,255,0.75) !important;
 }
 
-/* ── SIDEBAR HOVER STATE — light dark forest green ── */
+/* ── SIDEBAR HOVER STATE ── */
 .body-sidebar .standard-sidebar-item:hover {
   background: #2d5a3d !important;
   border-radius: 6px !important;
@@ -75,7 +84,7 @@
   stroke: #ffffff !important;
 }
 
-/* ── SIDEBAR SELECTED/ACTIVE STATE — dark forest green ── */
+/* ── SIDEBAR SELECTED/ACTIVE STATE ── */
 .body-sidebar .standard-sidebar-item.active-sidebar {
   background: #163020 !important;
   border-radius: 6px !important;
@@ -118,20 +127,11 @@
   border-color: var(--eusol-green-mid) !important;
 }
 
-/* ── CARDS / WIDGETS ── */
-.widget,
-.chart-container,
-.dashboard-chart {
-  border-radius: 10px !important;
-}
-
-/* ── CARD SHADOWS & UNIFORM SURFACE ── */
+/* ── CARDS / WIDGETS — purely visual containers, safe to style ── */
 .widget,
 .chart-container,
 .dashboard-chart,
 .frappe-card,
-.form-section,
-.section-body,
 .dashboard-graph,
 .number-widget-box,
 .shortcut-widget-box,
@@ -143,21 +143,29 @@
   box-shadow: 0 2px 8px rgba(27,58,45,0.06), 0 1px 2px rgba(27,58,45,0.04) !important;
 }
 
-/* ── LIST VIEW CARDS ── */
-.list-row-container,
-.result-list .list-row {
-  background: #ffffff !important;
-  border-radius: 8px !important;
-  box-shadow: 0 1px 4px rgba(27,58,45,0.05) !important;
-  margin-bottom: 4px !important;
-}
+/* REMOVED: .form-section / .section-body were taken out of the
+   block above. These are structural form containers used inside
+   many doctypes, not standalone cards — styling them risks the
+   same width/shadow stacking issues flagged below for .form-layout. */
 
-/* ── FORM CARD ── */
-.page-form .form-layout,
-.form-page {
+/* ── LIST VIEW — REMOVED layout-risky rules ──
+   .list-row-container / .result-list .list-row are structural
+   flex/grid rows that control column widths in list views.
+   Adding margin-bottom, border-radius, and box-shadow directly to
+   them is the most likely cause of pages stretching left — it can
+   interfere with the row's width/flex-basis calculation.
+   If you want "card style" list rows, this needs to target an
+   inner wrapper div instead of the row element itself. Send a
+   screenshot of the list view and I'll find the correct selector. */
+
+/* ── FORM CARD — REMOVED ──
+   .form-layout / .form-page are core structural containers for
+   every doctype form, typically set to width:100% inside a
+   constrained parent. Forcing border-radius/box-shadow directly
+   on them is the other likely cause of the stretch bug. Safer
+   alternative below targets an inner wrapper only. */
+.form-page .form-layout .form-page-wrapper {
   background: #ffffff !important;
-  border-radius: 10px !important;
-  box-shadow: 0 2px 8px rgba(27,58,45,0.06) !important;
 }
 
 /* ── SIDEBAR BOTTOM — Getting Started & Administrator ── */
@@ -181,7 +189,6 @@
   color: rgba(255,255,255,0.55) !important;
 }
 
-/* Override Frappe's text-secondary utility inside sidebar */
 .body-sidebar .text-secondary {
   color: rgba(255,255,255,0.55) !important;
 }
