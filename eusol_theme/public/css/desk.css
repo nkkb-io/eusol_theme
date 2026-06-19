@@ -129,10 +129,7 @@
 
 /* ── CARDS / WIDGETS — purely visual containers, safe to style ── */
 .widget,
-.chart-container,
-.dashboard-chart,
 .frappe-card,
-.dashboard-graph,
 .number-widget-box,
 .shortcut-widget-box,
 .links-widget-box,
@@ -142,6 +139,20 @@
   border-radius: 10px !important;
   box-shadow: 0 2px 8px rgba(27,58,45,0.06), 0 1px 2px rgba(27,58,45,0.04) !important;
 }
+
+/* REMOVED .chart-container / .dashboard-chart / .dashboard-graph
+   from the rule above. These are sizing wrappers used by the
+   charting library (Frappe Charts) to calculate canvas width
+   from its parent container. Adding border + box-shadow directly
+   to them changes the box model the library measures against,
+   which is the most likely cause of charts stretching full-width
+   edge-to-edge instead of respecting their grid column.
+   If you want chart cards to have a border/shadow, target an
+   OUTER wrapper instead — e.g. the .widget div that *contains*
+   the chart-container, not the chart-container itself. Most
+   dashboard chart widgets in Frappe are already wrapped in a
+   .widget div, so the .widget rule above should already give
+   you the card look without touching the chart's own sizing div. */
 
 /* REMOVED: .form-section / .section-body were taken out of the
    block above. These are structural form containers used inside
