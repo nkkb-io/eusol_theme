@@ -101,14 +101,23 @@
   stroke: #ffffff !important;
 }
 
-/* ── MAIN CONTENT ── */
-.main-section {
+/* ── MAIN CONTENT — every wrapper layer forced to the same cream,
+   so there's no white seam anywhere between page-head and footer ── */
+.main-section,
+.page-container,
+.content,
+.page-body,
+.layout-main,
+.layout-main-section-wrapper,
+.layout-main-section,
+.standard-main-section,
+body {
   background: var(--eusol-cream) !important;
 }
 
 /* ── PAGE HEAD ── */
 .page-head {
-  background: #ffffff !important;
+  background: var(--eusol-cream) !important;
 }
 
 .page-title .title-text {
@@ -127,17 +136,19 @@
   border-color: var(--eusol-green-mid) !important;
 }
 
-/* ── CARDS / WIDGETS — purely visual containers, safe to style ── */
+/* ── CARDS / WIDGETS — cream-tinted, not white, so they sit on
+   the page without a color jump. Slightly darker border + shadow
+   does the separating work instead of a background color change. ── */
 .widget,
 .frappe-card,
 .number-widget-box,
 .shortcut-widget-box,
 .links-widget-box,
 .onboarding-widget-box {
-  background: #ffffff !important;
-  border: 1px solid rgba(27,58,45,0.06) !important;
+  background: var(--eusol-cream) !important;
+  border: 1px solid rgba(27,58,45,0.12) !important;
   border-radius: 10px !important;
-  box-shadow: 0 2px 8px rgba(27,58,45,0.06), 0 1px 2px rgba(27,58,45,0.04) !important;
+  box-shadow: 0 2px 8px rgba(27,58,45,0.05), 0 1px 2px rgba(27,58,45,0.04) !important;
 }
 
 /* REMOVED .chart-container / .dashboard-chart / .dashboard-graph
@@ -176,7 +187,7 @@
    on them is the other likely cause of the stretch bug. Safer
    alternative below targets an inner wrapper only. */
 .form-page .form-layout .form-page-wrapper {
-  background: #ffffff !important;
+  background: var(--eusol-cream) !important;
 }
 
 /* ── SIDEBAR BOTTOM — Getting Started & Administrator ── */
