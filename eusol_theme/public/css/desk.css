@@ -48,8 +48,13 @@
   color: rgba(255,255,255,0.9) !important;
 }
 
+/* ── HIDE per-app subtitle (e.g. "Frappe Framework", "ERPNext", "HR")
+   These are pulled from each installed app's own hooks.py and
+   change depending on which app's workspace you're viewing.
+   Hiding instead of relabeling avoids ever touching core app files,
+   so this survives bench update / upgrade with zero conflict risk. */
 .body-sidebar .header-subtitle {
-  color: rgba(255,255,255,0.55) !important;
+  display: none !important;
 }
 
 .body-sidebar svg {
@@ -217,4 +222,27 @@ body {
 
 .body-sidebar .text-muted {
   color: rgba(255,255,255,0.55) !important;
+}
+
+/* ── FIX: Administrator name/email button at sidebar bottom ──
+   This is an <a class="... sidebar-user-button"> element. Frappe's
+   own hover style for this button applies a white background,
+   which combined with our near-white text color made it unreadable
+   on hover. Explicitly pin both background and text on hover. */
+.body-sidebar .sidebar-user-button {
+  background: transparent !important;
+}
+
+.body-sidebar .sidebar-user-button:hover {
+  background: rgba(255,255,255,0.08) !important;
+}
+
+.body-sidebar .sidebar-user-button:hover *,
+.body-sidebar .sidebar-user-button .d-block,
+.body-sidebar .sidebar-user-button .text-truncate {
+  color: #ffffff !important;
+}
+
+.body-sidebar .sidebar-user-button:hover .text-secondary {
+  color: rgba(255,255,255,0.75) !important;
 }
