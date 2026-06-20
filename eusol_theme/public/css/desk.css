@@ -130,6 +130,19 @@ table,
 }
 
 /* ---------------------------------------------------------
+   6. Replace the "owning app" subtitle (ERPNext / Frappe
+   Framework / HR) under the sidebar title with the company
+   name instead.
+   --------------------------------------------------------- */
+.header-subtitle {
+  font-size: 0 !important;
+}
+.header-subtitle::after {
+  content: "Eusol Organics";
+  font-size: 0.75rem;
+}
+
+/* ---------------------------------------------------------
    5. Bold headers
    --------------------------------------------------------- */
 h1, h2, h3, h4, h5, h6,
