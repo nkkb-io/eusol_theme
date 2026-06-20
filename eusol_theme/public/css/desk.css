@@ -1,220 +1,144 @@
-/* ============================================================
-   EUSOL — ERPNext Desk Theme
-   Flat, uniform sidebar. No floating cards. Fixed text contrast.
-   FIX: removed layout-affecting overrides on .list-row /
-   .list-row-container / .form-layout that were causing pages
-   to stretch left (these are structural rows, not card surfaces).
-   ============================================================ */
-
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+/* =========================================================
+   Custom Desk Theme Overrides
+   Target: Frappe / ERPNext desk (v15-style sidebar/navbar)
+   Selectors are taken from the live DOM in DevTools.
+   If a future Frappe update renames a class, re-inspect with
+   DevTools and swap just that selector — the rest still works.
+   ========================================================= */
 
 :root {
-  --eusol-green: #1b3a2d;
-  --eusol-green-mid: #2a5240;
-  --eusol-green-light: #5a8a6a;
-  --eusol-cream: #f5f0e8;
-  --eusol-gold: #c9a84c;
+  --cream-bg: #FAF7F0;      /* lighter cream, replaces pure white panels */
+  --cream-bg-soft: #F6F2E9; /* slightly deeper cream for nested cards */
+  --readable-dark: #1F2937; /* dark text/icon color for light backgrounds */
+  --readable-mid: #4B5563;  /* secondary text on light backgrounds */
+  --cream-text: #FAF3E3;    /* cream text on the dark sidebar, resting state */
+  --cream-text-soft: rgba(250, 243, 227, 0.72); /* dimmed cream for email/secondary line */
 }
 
-/* ── SIDEBAR BACKGROUND ── */
-.body-sidebar {
-  background: var(--eusol-green) !important;
+/* ---------------------------------------------------------
+   1. Page header — give it depth instead of blending into body
+   --------------------------------------------------------- */
+.page-head,
+.navbar {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  position: relative;
+  z-index: 2;
 }
 
-.sidebar-header {
-  background: var(--eusol-green) !important;
+/* ---------------------------------------------------------
+   2. Fix unreadable text/icons on hover (white-on-white)
+   The .text-secondary color (rgba(255,255,255,.55)) is meant
+   for the dark sidebar background. It becomes invisible
+   wherever it ends up on a light hover/dropdown background.
+   --------------------------------------------------------- */
+
+/* Administrator name + email in the sidebar user button — cream at rest */
+.sidebar-user-button .d-block.text-truncate {
+  color: var(--cream-text) !important;
+}
+.sidebar-user-button .d-block.text-secondary.text-truncate {
+  color: var(--cream-text-soft) !important;
 }
 
-/* ── SIDEBAR LOGO ── */
-.header-logo {
-  background-image: url('/files/EUSOL--LOGO.png') !important;
-  background-size: contain !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  border-radius: 8px !important;
+/* On hover, switch to dark text (the readable state you confirmed is good) */
+.sidebar-user-button:hover .d-block.text-truncate {
+  color: var(--readable-dark) !important;
 }
-.header-logo svg,
-.header-logo img,
-.header-logo .icon {
-  display: none !important;
+.sidebar-user-button:hover .d-block.text-secondary.text-truncate {
+  color: var(--readable-mid) !important;
 }
 
-/* ── SIDEBAR DEFAULT TEXT ── */
-.body-sidebar .sidebar-item-label {
-  color: rgba(255,255,255,0.75) !important;
+/* Whatever menu/dropdown opens from the user button */
+.dropdown-navbar-user .dropdown-menu,
+.dropdown-navbar-user .dropdown-menu * {
+  color: var(--readable-dark) !important;
 }
 
-.body-sidebar .header-title {
-  color: rgba(255,255,255,0.9) !important;
+/* Sidebar collapse/toggle arrow — icon disappears on hover */
+.collapse-sidebar-link,
+.sidebar-toggle-btn {
+  color: var(--readable-dark);
+}
+.collapse-sidebar-link:hover,
+.sidebar-toggle-btn:hover {
+  background-color: var(--cream-bg-soft) !important;
+}
+.collapse-sidebar-link:hover svg,
+.sidebar-toggle-btn:hover svg {
+  stroke: var(--readable-dark) !important;
+  color: var(--readable-dark) !important;
 }
 
-.body-sidebar .header-subtitle {
-  color: rgba(255,255,255,0.55) !important;
+/* General safety net: any nav-link/sidebar item hover state
+   should always resolve to a readable dark color, never the
+   low-opacity white meant for the dark green background */
+.standard-sidebar-item:hover,
+.sidebar-user-button:hover {
+  background-color: var(--cream-bg-soft) !important;
+}
+.standard-sidebar-item:hover .text-secondary,
+.sidebar-user-button:hover .text-secondary {
+  color: var(--readable-mid) !important;
 }
 
-.body-sidebar svg {
-  color: rgba(255,255,255,0.6) !important;
-  stroke: rgba(255,255,255,0.6) !important;
-  fill: none !important;
-}
-
-/* NOTE: scoped down to text/span/a/div only — the original
-   wildcard `[class*="text-ink-gray"]` with no tag restriction
-   risks matching nested menus/tooltips/modals rendered inside
-   the sidebar DOM tree, not just sidebar nav text. */
-.body-sidebar a[class*="text-ink-gray"],
-.body-sidebar span[class*="text-ink-gray"],
-.body-sidebar div[class*="text-ink-gray"] {
-  color: rgba(255,255,255,0.75) !important;
-}
-
-/* ── SIDEBAR HOVER STATE ── */
-.body-sidebar .standard-sidebar-item:hover {
-  background: #2d5a3d !important;
-  border-radius: 6px !important;
-}
-
-.body-sidebar .standard-sidebar-item:hover .sidebar-item-label,
-.body-sidebar .standard-sidebar-item:hover [class*="text-ink-gray"] {
-  color: #ffffff !important;
-}
-
-.body-sidebar .standard-sidebar-item:hover svg {
-  color: #ffffff !important;
-  stroke: #ffffff !important;
-}
-
-/* ── SIDEBAR SELECTED/ACTIVE STATE ── */
-.body-sidebar .standard-sidebar-item.active-sidebar {
-  background: #163020 !important;
-  border-radius: 6px !important;
-  border-left: 3px solid var(--eusol-gold) !important;
-}
-
-.body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-label,
-.body-sidebar .standard-sidebar-item.active-sidebar [class*="text-ink-gray"] {
-  color: #ffffff !important;
-}
-
-.body-sidebar .standard-sidebar-item.active-sidebar svg {
-  color: #ffffff !important;
-  stroke: #ffffff !important;
-}
-
-/* ── MAIN CONTENT — every wrapper layer forced to the same cream,
-   so there's no white seam anywhere between page-head and footer ── */
-.main-section,
-.page-container,
-.content,
-.page-body,
-.layout-main,
-.layout-main-section-wrapper,
-.layout-main-section,
-.standard-main-section,
-body {
-  background: var(--eusol-cream) !important;
-}
-
-/* ── PAGE HEAD ── */
-.page-head {
-  background: var(--eusol-cream) !important;
-}
-
-.page-title .title-text {
-  font-family: 'Playfair Display', serif !important;
-  color: var(--eusol-green) !important;
-}
-
-/* ── BUTTONS ── */
-.btn-primary {
-  background: var(--eusol-green) !important;
-  border-color: var(--eusol-green) !important;
-}
-
-.btn-primary:hover {
-  background: var(--eusol-green-mid) !important;
-  border-color: var(--eusol-green-mid) !important;
-}
-
-/* ── CARDS / WIDGETS — cream-tinted, not white, so they sit on
-   the page without a color jump. Slightly darker border + shadow
-   does the separating work instead of a background color change. ── */
-.widget,
+/* ---------------------------------------------------------
+   3. Replace stark white panels with a lighter cream
+   (active sessions table, form sections, cards, comment box)
+   --------------------------------------------------------- */
 .frappe-card,
-.number-widget-box,
-.shortcut-widget-box,
-.links-widget-box,
-.onboarding-widget-box {
-  background: var(--eusol-cream) !important;
-  border: 1px solid rgba(27,58,45,0.12) !important;
-  border-radius: 10px !important;
-  box-shadow: 0 2px 8px rgba(27,58,45,0.05), 0 1px 2px rgba(27,58,45,0.04) !important;
+.form-section,
+.section-body,
+.comment-box,
+.table-bordered,
+.grid-body,
+.list-row-container,
+body.theme-light .content,
+.page-body {
+  background-color: var(--cream-bg) !important;
 }
 
-/* REMOVED .chart-container / .dashboard-chart / .dashboard-graph
-   from the rule above. These are sizing wrappers used by the
-   charting library (Frappe Charts) to calculate canvas width
-   from its parent container. Adding border + box-shadow directly
-   to them changes the box model the library measures against,
-   which is the most likely cause of charts stretching full-width
-   edge-to-edge instead of respecting their grid column.
-   If you want chart cards to have a border/shadow, target an
-   OUTER wrapper instead — e.g. the .widget div that *contains*
-   the chart-container, not the chart-container itself. Most
-   dashboard chart widgets in Frappe are already wrapped in a
-   .widget div, so the .widget rule above should already give
-   you the card look without touching the chart's own sizing div. */
-
-/* REMOVED: .form-section / .section-body were taken out of the
-   block above. These are structural form containers used inside
-   many doctypes, not standalone cards — styling them risks the
-   same width/shadow stacking issues flagged below for .form-layout. */
-
-/* ── LIST VIEW — REMOVED layout-risky rules ──
-   .list-row-container / .result-list .list-row are structural
-   flex/grid rows that control column widths in list views.
-   Adding margin-bottom, border-radius, and box-shadow directly to
-   them is the most likely cause of pages stretching left — it can
-   interfere with the row's width/flex-basis calculation.
-   If you want "card style" list rows, this needs to target an
-   inner wrapper div instead of the row element itself. Send a
-   screenshot of the list view and I'll find the correct selector. */
-
-/* ── FORM CARD — REMOVED ──
-   .form-layout / .form-page are core structural containers for
-   every doctype form, typically set to width:100% inside a
-   constrained parent. Forcing border-radius/box-shadow directly
-   on them is the other likely cause of the stretch bug. Safer
-   alternative below targets an inner wrapper only. */
-.form-page .form-layout .form-page-wrapper {
-  background: var(--eusol-cream) !important;
+/* Table header / zebra rows get the slightly deeper cream so
+   they still read as distinct from the section background */
+.table-bordered thead th,
+.grid-heading-row,
+.list-row:nth-child(even) {
+  background-color: var(--cream-bg-soft) !important;
 }
 
-/* ── SIDEBAR BOTTOM — Getting Started & Administrator ── */
-.body-sidebar .onboarding-sidebar {
-  background: rgba(255,255,255,0.08) !important;
-  border-radius: 8px !important;
-  padding: 8px !important;
+/* ---------------------------------------------------------
+   4. One consistent font everywhere — the confirmed ERPNext
+   default stack. Form elements (input/select/button/table)
+   don't inherit font by default in most browsers — that
+   mismatch is usually why fonts look inconsistent, so force
+   inheritance from html/body down to everything else.
+   --------------------------------------------------------- */
+html, body {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+input,
+textarea,
+select,
+button,
+table,
+.dropdown-menu,
+.page-title,
+.section-head,
+.form-control {
+  font-family: inherit !important;
 }
 
-.body-sidebar .onboarding-sidebar * {
-  color: rgba(255,255,255,0.85) !important;
-}
-
-/* Administrator name */
-.body-sidebar .d-block.text-truncate {
-  color: rgba(255,255,255,0.9) !important;
-}
-
-/* Administrator email/subtitle */
-.body-sidebar .d-block.text-secondary.text-truncate {
-  color: rgba(255,255,255,0.55) !important;
-}
-
-.body-sidebar .text-secondary {
-  color: rgba(255,255,255,0.55) !important;
-}
-
-.body-sidebar .text-muted {
-  color: rgba(255,255,255,0.55) !important;
+/* ---------------------------------------------------------
+   5. Bold headers
+   --------------------------------------------------------- */
+h1, h2, h3, h4, h5, h6,
+.page-title,
+.title-text,
+.section-head,
+.card-head,
+.modal-title,
+.form-section .section-head {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 700 !important;
 }
