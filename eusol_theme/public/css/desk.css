@@ -28,11 +28,11 @@
   background-size: contain !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
-  border-radius: 12px !important;
+  border-radius: 8px !important;
 }
 .header-logo svg,
 .header-logo img,
-.header-logo {
+.header-logo .icon {
   display: none !important;
 }
 
@@ -49,7 +49,7 @@
 }
 .body-sidebar .header-subtitle::after {
   content: "Eusol Organics";
-  font-size: 2rem;
+  font-size: 0.75rem;
   color: rgba(255,255,255,0.6);
 }
 
