@@ -1,1 +1,122 @@
+{% extends "templates/web.html" %}
 
+{% block title %}Eusol POS{% endblock %}
+
+{% block page_content %}
+<div id="eusol-pos-root">
+
+  <!-- TOP NAV -->
+  <header class="ep-topbar">
+    <div class="ep-brand">
+      <span class="ep-brand-mark">E</span>
+      <span class="ep-brand-name">Eusol<strong>POS</strong></span>
+    </div>
+    <nav class="ep-nav">
+      <button class="ep-nav-btn active" data-view="pos">POS</button>
+      <button class="ep-nav-btn" data-view="orders">Orders</button>
+      <button class="ep-nav-btn" data-view="customers">Customers</button>
+      <button class="ep-nav-btn" data-view="reports">Reports</button>
+      <button class="ep-nav-btn" data-view="kitchen">Kitchen</button>
+      <button class="ep-nav-btn" data-view="shift">Shift</button>
+      <button class="ep-nav-btn" data-view="settings">Settings</button>
+    </nav>
+    <div class="ep-user">
+      <span class="ep-online-dot" id="ep-online-dot" title="Online"></span>
+      <span class="ep-user-initials">{{ user_initials }}</span>
+    </div>
+  </header>
+
+  <!-- SHIFT STATUS STRIP -->
+  <div class="ep-statusbar">
+    <div class="ep-status-item">
+      <span class="ep-status-label">Cashier</span>
+      <span class="ep-status-value">{{ user_name }}</span>
+    </div>
+    <div class="ep-status-item">
+      <span class="ep-status-label">Shift</span>
+      <span class="ep-status-value" id="ep-shift-clock">--:--:--</span>
+    </div>
+    <div class="ep-status-item">
+      <span class="ep-status-label">Break</span>
+      <span class="ep-status-value" id="ep-break-timer">Not on break</span>
+    </div>
+    <div class="ep-status-item ep-stock-alert" id="ep-stock-alert" style="display:none;">
+      <span class="ep-status-label">⚠ Low stock</span>
+      <span class="ep-status-value" id="ep-stock-count">0 items</span>
+    </div>
+    <div class="ep-status-spacer"></div>
+    <div class="ep-status-item">
+      <input type="text" id="ep-barcode-input" class="ep-barcode-input" placeholder="Scan barcode or search…" autocomplete="off">
+    </div>
+  </div>
+
+  <!-- MAIN BODY -->
+  <div class="ep-body">
+
+    <!-- CATEGORY ICON RAIL -->
+    <aside class="ep-category-rail" id="ep-category-rail">
+      <button class="ep-cat-btn active" data-category="all">
+        <span class="ep-cat-icon">▦</span><span class="ep-cat-label">All</span>
+      </button>
+      <!-- categories injected here -->
+    </aside>
+
+    <!-- PRODUCT GRID -->
+    <main class="ep-product-area">
+      <div class="ep-product-toolbar">
+        <input type="text" id="ep-search-input" class="ep-search-input" placeholder="Search products…">
+        <span class="ep-product-count" id="ep-product-count">0 products</span>
+      </div>
+      <div class="ep-product-grid" id="ep-product-grid">
+        <div class="ep-loading">Loading products…</div>
+      </div>
+    </main>
+
+    <!-- CART PANEL -->
+    <aside class="ep-cart-panel">
+      <div class="ep-cart-customer" id="ep-cart-customer">
+        <div class="ep-customer-avatar">👤</div>
+        <div class="ep-customer-info">
+          <div class="ep-customer-name" id="ep-customer-name">Walk-in Customer</div>
+          <div class="ep-customer-points" id="ep-customer-points">— loyalty points</div>
+        </div>
+        <button class="ep-customer-change" id="ep-customer-change">Change</button>
+      </div>
+
+      <div class="ep-cart-items" id="ep-cart-items">
+        <div class="ep-cart-empty">Cart is empty<br><span>Tap a product to add it</span></div>
+      </div>
+
+      <div class="ep-cart-actions-row">
+        <button class="ep-pill-btn" id="ep-hold-btn">⏸ Hold</button>
+        <button class="ep-pill-btn" id="ep-discount-btn">% Discount</button>
+        <button class="ep-pill-btn" id="ep-notes-btn">✎ Notes</button>
+      </div>
+
+      <div class="ep-cart-totals">
+        <div class="ep-total-row"><span>Subtotal</span><span id="ep-subtotal">GHS 0.00</span></div>
+        <div class="ep-total-row"><span>Discount</span><span id="ep-discount-amt">GHS 0.00</span></div>
+        <div class="ep-total-row"><span>VAT (15%)</span><span id="ep-vat-amt">GHS 0.00</span></div>
+        <div class="ep-total-row ep-grand-total"><span>Total</span><span id="ep-grand-total">GHS 0.00</span></div>
+      </div>
+
+      <div class="ep-payment-methods">
+        <button class="ep-pay-btn" data-method="cash">💵 Cash</button>
+        <button class="ep-pay-btn" data-method="momo">📱 MoMo</button>
+        <button class="ep-pay-btn" data-method="card">💳 Card</button>
+        <button class="ep-pay-btn" data-method="split">⊞ Split</button>
+        <button class="ep-pay-btn" data-method="gift">🎁 Gift</button>
+        <button class="ep-pay-btn" data-method="credit">📒 Credit</button>
+      </div>
+
+      <button class="ep-charge-btn" id="ep-charge-btn">
+        Charge <span id="ep-charge-amount">GHS 0.00</span>
+      </button>
+    </aside>
+
+  </div>
+</div>
+
+<link rel="stylesheet" href="/assets/eusol_theme/css/eusol-pos.css">
+<script src="/assets/eusol_theme/js/eusol-pos.js"></script>
+{% endblock %}
