@@ -281,3 +281,29 @@ body main{
   80%{opacity:1;}
   100%{opacity:0;}
 }
+
+/* SPLIT PAYMENT */
+.ep-split-rows{display:flex; flex-direction:column; gap:8px; max-height:240px; overflow-y:auto;}
+.ep-split-row{display:flex; gap:8px; align-items:center;}
+.ep-split-row select, .ep-split-row input{
+  background:var(--ep-bg-card); border:1px solid var(--ep-border); color:var(--ep-text);
+  padding:8px 10px; border-radius:8px; font-size:13px; outline:none;
+}
+.ep-split-row select{flex:1;}
+.ep-split-row input{width:110px;}
+.ep-split-row button{background:none; border:none; color:var(--ep-red); cursor:pointer; font-size:14px;}
+.ep-split-remaining{font-size:13px; color:var(--ep-text-dim); text-align:right;}
+.ep-split-remaining span{color:var(--ep-accent-gold); font-weight:700;}
+
+/* RECEIPT */
+.ep-receipt{width:380px; font-family:'Courier New', monospace;}
+.ep-receipt-actions{display:flex; gap:8px;}
+.ep-receipt-actions .ep-charge-btn{flex:1;}
+#ep-receipt-content{
+  background:#fff; color:#111; padding:18px; border-radius:6px; font-size:12.5px; line-height:1.5;
+  max-height:60vh; overflow-y:auto;
+}
+#ep-receipt-content .ep-r-center{text-align:center;}
+#ep-receipt-content .ep-r-line{display:flex; justify-content:space-between;}
+#ep-receipt-content .ep-r-divider{border-top:1px dashed #999; margin:8px 0;}
+#ep-receipt-content .ep-r-bold{font-weight:700;}
