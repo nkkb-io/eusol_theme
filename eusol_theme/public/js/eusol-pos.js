@@ -17,7 +17,12 @@ frappe.ready(function () {
   EP.bindSearchAndBarcode();
   EP.startShiftClock();
   EP.bindNetworkStatus();
+  EP.bindCustomerModal();
+  EP.bindPaymentMethods();
+  EP.bindChargeButton();
+  EP.bindDiscountButton();
   EP.loadProducts();
+  EP.renderCart();
 });
 
 // ---------- NAV ----------
@@ -90,11 +95,58 @@ EP.handleBarcode = function (code) {
       it.item_name.toLowerCase() === code.toLowerCase()
   );
   if (found) {
-    frappe.show_alert({ message: `Scanned: ${found.item_name}`, indicator: "green" });
-    // Phase 2 will call EP.addToCart(found) here.
+    EP.addToCart(found);
   } else {
     frappe.show_alert({ message: `No product found for "${code}"`, indicator: "red" });
   }
+};
+
+// ============================================================
+// PHASE 2: PAYMENT METHOD SELECTION + CHARGE + DISCOUNT
+// ============================================================
+
+EP.selectedPaymentMethod = null;
+
+EP.bindPaymentMethods = function () {
+  document.querySelectorAll(".ep-pay-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".ep-pay-btn").forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      EP.selectedPaymentMethod = btn.dataset.method;
+    });
+  });
+};
+
+EP.bindDiscountButton = function () {
+  document.getElementById("ep-discount-btn").addEventListener("click", () => {
+    const subtotal = EP.cart.items.reduce((sum, l) => sum + l.rate * l.qty, 0);
+    if (subtotal === 0) {
+      frappe.show_alert({ message: "Add items to the cart first", indicator: "orange" });
+      return;
+    }
+    const input = prompt("Enter discount amount (GHS):", "0");
+    const amount = parseFloat(input);
+    if (!isNaN(amount) && amount >= 0) {
+      EP.cart.discount = amount;
+      EP.renderTotals();
+      EP.flash(`Discount applied: GHS ${amount.toFixed(2)}`);
+    }
+  });
+};
+
+EP.bindChargeButton = function () {
+  document.getElementById("ep-charge-btn").addEventListener("click", () => {
+    if (EP.cart.items.length === 0) return;
+    if (!EP.selectedPaymentMethod) {
+      frappe.show_alert({ message: "Select a payment method first", indicator: "orange" });
+      return;
+    }
+    // Full checkout (Sales Invoice creation, Paystack, gift/credit logic) lands in Phase 3.
+    frappe.show_alert({
+      message: `Ready to charge via ${EP.selectedPaymentMethod.toUpperCase()} — checkout logic arrives in Phase 3`,
+      indicator: "blue",
+    });
+  });
 };
 
 // ---------- LOAD PRODUCTS ----------
@@ -244,12 +296,235 @@ EP.renderProductGrid = function () {
     card.addEventListener("click", () => {
       const code = card.dataset.itemCode;
       const item = EP.items.find((i) => i.item_code === code);
-      frappe.show_alert({ message: `Selected: ${item.item_name} (cart logic arrives in Phase 2)`, indicator: "blue" });
+      EP.addToCart(item);
     });
   });
 
   EP.updateStockAlert();
 };
+
+// ============================================================
+// PHASE 2: CART LOGIC
+// ============================================================
+
+EP.VAT_RATE = 0.15;
+
+EP.addToCart = function (item) {
+  const existing = EP.cart.items.find((l) => l.item_code === item.item_code);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    EP.cart.items.push({
+      item_code: item.item_code,
+      item_name: item.item_name,
+      image: item.image,
+      item_group: item.item_group,
+      rate: item.standard_rate || 0,
+      qty: 1,
+    });
+  }
+  EP.flash(`Added: ${item.item_name}`);
+  EP.renderCart();
+};
+
+EP.changeQty = function (item_code, delta) {
+  const line = EP.cart.items.find((l) => l.item_code === item_code);
+  if (!line) return;
+  line.qty += delta;
+  if (line.qty <= 0) {
+    EP.cart.items = EP.cart.items.filter((l) => l.item_code !== item_code);
+  }
+  EP.renderCart();
+};
+
+EP.removeLine = function (item_code) {
+  EP.cart.items = EP.cart.items.filter((l) => l.item_code !== item_code);
+  EP.renderCart();
+};
+
+EP.renderCart = function () {
+  const wrap = document.getElementById("ep-cart-items");
+
+  if (EP.cart.items.length === 0) {
+    wrap.innerHTML = '<div class="ep-cart-empty">Cart is empty<br><span>Tap a product to add it</span></div>';
+  } else {
+    wrap.innerHTML = EP.cart.items
+      .map((line) => {
+        const imgHtml = line.image
+          ? `<img src="${frappe.utils.escape_html(line.image)}" alt="">`
+          : EP.emojiForGroup(line.item_group);
+        return `
+        <div class="ep-cart-line" data-item-code="${frappe.utils.escape_html(line.item_code)}">
+          <div class="ep-cart-line-img">${imgHtml}</div>
+          <div class="ep-cart-line-info">
+            <div class="ep-cart-line-name">${frappe.utils.escape_html(line.item_name)}</div>
+            <div class="ep-cart-line-price">GHS ${line.rate.toFixed(2)} × ${line.qty}</div>
+          </div>
+          <div class="ep-qty-controls">
+            <button class="ep-qty-btn ep-qty-minus">−</button>
+            <span class="ep-qty-val">${line.qty}</span>
+            <button class="ep-qty-btn ep-qty-plus">+</button>
+          </div>
+          <button class="ep-line-remove">✕</button>
+        </div>`;
+      })
+      .join("");
+
+    wrap.querySelectorAll(".ep-cart-line").forEach((row) => {
+      const code = row.dataset.itemCode;
+      row.querySelector(".ep-qty-plus").addEventListener("click", () => EP.changeQty(code, 1));
+      row.querySelector(".ep-qty-minus").addEventListener("click", () => EP.changeQty(code, -1));
+      row.querySelector(".ep-line-remove").addEventListener("click", () => EP.removeLine(code));
+    });
+  }
+
+  EP.renderTotals();
+};
+
+EP.renderTotals = function () {
+  const subtotal = EP.cart.items.reduce((sum, l) => sum + l.rate * l.qty, 0);
+  const discount = EP.cart.discount || 0;
+  const taxable = Math.max(subtotal - discount, 0);
+  const vat = taxable * EP.VAT_RATE;
+  const grandTotal = taxable + vat;
+
+  document.getElementById("ep-subtotal").textContent = `GHS ${subtotal.toFixed(2)}`;
+  document.getElementById("ep-discount-amt").textContent = `GHS ${discount.toFixed(2)}`;
+  document.getElementById("ep-vat-amt").textContent = `GHS ${vat.toFixed(2)}`;
+  document.getElementById("ep-grand-total").textContent = `GHS ${grandTotal.toFixed(2)}`;
+  document.getElementById("ep-charge-amount").textContent = `GHS ${grandTotal.toFixed(2)}`;
+
+  const chargeBtn = document.getElementById("ep-charge-btn");
+  chargeBtn.disabled = EP.cart.items.length === 0;
+};
+
+// ---------- TOAST ----------
+EP.flash = function (message) {
+  const el = document.createElement("div");
+  el.className = "ep-flash";
+  el.textContent = message;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1800);
+};
+
+// ============================================================
+// PHASE 2: CUSTOMER SEARCH + LOYALTY
+// ============================================================
+
+EP.bindCustomerModal = function () {
+  const modal = document.getElementById("ep-customer-modal");
+  const openBtn = document.getElementById("ep-customer-change");
+  const closeBtn = document.getElementById("ep-customer-modal-close");
+  const searchInput = document.getElementById("ep-customer-search-input");
+
+  openBtn.addEventListener("click", () => {
+    modal.style.display = "flex";
+    searchInput.value = "";
+    searchInput.focus();
+    EP.searchCustomers("");
+  });
+
+  closeBtn.addEventListener("click", () => (modal.style.display = "none"));
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.style.display = "none";
+  });
+
+  let debounceTimer;
+  searchInput.addEventListener("input", (e) => {
+    clearTimeout(debounceTimer);
+    const term = e.target.value.trim();
+    debounceTimer = setTimeout(() => EP.searchCustomers(term), 250);
+  });
+};
+
+EP.searchCustomers = function (term) {
+  const filters = term
+    ? [["customer_name", "like", `%${term}%`]]
+    : [];
+
+  frappe.call({
+    method: "frappe.client.get_list",
+    args: {
+      doctype: "Customer",
+      fields: ["name", "customer_name", "mobile_no", "loyalty_program"],
+      filters: filters,
+      limit_page_length: 20,
+      order_by: "customer_name asc",
+    },
+    callback: function (r) {
+      EP.renderCustomerResults(r.message || []);
+    },
+    error: function () {
+      EP.renderCustomerResults([]);
+    },
+  });
+};
+
+EP.renderCustomerResults = function (customers) {
+  const wrap = document.getElementById("ep-customer-results");
+
+  let html = `
+    <div class="ep-customer-result-row" data-customer="">
+      <div class="ep-customer-result-avatar">👤</div>
+      <div class="ep-customer-result-info">
+        <div class="ep-customer-result-name">Walk-in Customer</div>
+        <div class="ep-customer-result-meta">No account needed</div>
+      </div>
+    </div>`;
+
+  html += customers
+    .map(
+      (c) => `
+    <div class="ep-customer-result-row" data-customer="${frappe.utils.escape_html(c.name)}" data-name="${frappe.utils.escape_html(c.customer_name)}">
+      <div class="ep-customer-result-avatar">👤</div>
+      <div class="ep-customer-result-info">
+        <div class="ep-customer-result-name">${frappe.utils.escape_html(c.customer_name)}</div>
+        <div class="ep-customer-result-meta">${c.mobile_no ? frappe.utils.escape_html(c.mobile_no) : "No phone on file"}</div>
+      </div>
+    </div>`
+    )
+    .join("");
+
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll(".ep-customer-result-row").forEach((row) => {
+    row.addEventListener("click", () => {
+      const customerId = row.dataset.customer;
+      const customerName = row.dataset.name || "Walk-in Customer";
+      EP.selectCustomer(customerId, customerName);
+      document.getElementById("ep-customer-modal").style.display = "none";
+    });
+  });
+};
+
+EP.selectCustomer = function (customerId, customerName) {
+  EP.cart.customer = customerId || null;
+  document.getElementById("ep-customer-name").textContent = customerName;
+
+  if (!customerId) {
+    document.getElementById("ep-customer-points").textContent = "— loyalty points";
+    return;
+  }
+
+  document.getElementById("ep-customer-points").textContent = "Loading points…";
+  frappe.call({
+    method: "frappe.client.get_list",
+    args: {
+      doctype: "Loyalty Point Entry",
+      fields: ["sum(loyalty_points) as total"],
+      filters: { customer: customerId },
+    },
+    callback: function (r) {
+      const total = (r.message && r.message[0] && r.message[0].total) || 0;
+      document.getElementById("ep-customer-points").textContent = `${total} loyalty points`;
+    },
+    error: function () {
+      document.getElementById("ep-customer-points").textContent = "— loyalty points";
+    },
+  });
+};
+
+
 
 EP.emojiForGroup = function (group) {
   const map = {
