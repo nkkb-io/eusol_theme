@@ -21,6 +21,8 @@ frappe.ready(function () {
   EP.bindPaymentMethods();
   EP.bindChargeButton();
   EP.bindDiscountButton();
+  EP.bindSplitModal();
+  EP.bindReceiptModal();
   EP.loadProducts();
   EP.renderCart();
 });
@@ -141,11 +143,254 @@ EP.bindChargeButton = function () {
       frappe.show_alert({ message: "Select a payment method first", indicator: "orange" });
       return;
     }
-    // Full checkout (Sales Invoice creation, Paystack, gift/credit logic) lands in Phase 3.
-    frappe.show_alert({
-      message: `Ready to charge via ${EP.selectedPaymentMethod.toUpperCase()} — checkout logic arrives in Phase 3`,
-      indicator: "blue",
+
+    const grandTotal = EP.getGrandTotal();
+
+    if (EP.selectedPaymentMethod === "split") {
+      EP.openSplitModal(grandTotal);
+      return;
+    }
+
+    if (EP.selectedPaymentMethod === "card") {
+      EP.chargeViaPaystack(grandTotal);
+      return;
+    }
+
+    if (EP.selectedPaymentMethod === "credit") {
+      EP.chargeWithCreditCheck(grandTotal);
+      return;
+    }
+
+    // cash / momo / gift — straightforward single-payment checkout
+    EP.submitInvoice([{ mode_of_payment: EP.selectedPaymentMethod, amount: grandTotal }]);
+  });
+};
+
+EP.getGrandTotal = function () {
+  const subtotal = EP.cart.items.reduce((sum, l) => sum + l.rate * l.qty, 0);
+  const discount = EP.cart.discount || 0;
+  const taxable = Math.max(subtotal - discount, 0);
+  const vat = taxable * EP.VAT_RATE;
+  return taxable + vat;
+};
+
+// ---------- CREDIT ----------
+EP.chargeWithCreditCheck = function (grandTotal) {
+  if (!EP.cart.customer) {
+    frappe.show_alert({ message: "Credit sales require a registered customer", indicator: "orange" });
+    return;
+  }
+  frappe.call({
+    method: "eusol_theme.api.check_credit_limit",
+    args: { customer: EP.cart.customer, amount: grandTotal },
+    callback: function (r) {
+      const result = r.message;
+      if (result.credit_limit && !result.allowed) {
+        frappe.show_alert({
+          message: `Credit limit exceeded (Outstanding: GHS ${result.outstanding.toFixed(2)} / Limit: GHS ${result.credit_limit.toFixed(2)})`,
+          indicator: "red",
+        });
+        return;
+      }
+      EP.submitInvoice([{ mode_of_payment: "credit", amount: grandTotal }]);
+    },
+  });
+};
+
+// ---------- PAYSTACK ----------
+EP.chargeViaPaystack = function (grandTotal) {
+  const reference = "EUSOL-" + Date.now();
+  const email = EP.cart.customer
+    ? frappe.session.user
+    : "walkin@eusolgh.com"; // Paystack requires an email; falls back for walk-ins
+
+  frappe.call({
+    method: "eusol_theme.api.paystack_initialize",
+    args: { email: email, amount: grandTotal, reference: reference },
+    callback: function (r) {
+      const data = r.message;
+      if (!data || !data.authorization_url) {
+        frappe.show_alert({ message: "Could not start Paystack checkout", indicator: "red" });
+        return;
+      }
+      // Open Paystack's hosted checkout in a new tab; poll for verification.
+      window.open(data.authorization_url, "_blank");
+      EP.pollPaystackVerification(reference, grandTotal);
+    },
+    error: function (err) {
+      frappe.show_alert({
+        message: (err && err.message) || "Paystack is not configured for this site yet",
+        indicator: "red",
+      });
+    },
+  });
+};
+
+EP.pollPaystackVerification = function (reference, grandTotal, attempt = 0) {
+  if (attempt > 30) {
+    frappe.show_alert({ message: "Paystack verification timed out", indicator: "red" });
+    return;
+  }
+  setTimeout(() => {
+    frappe.call({
+      method: "eusol_theme.api.paystack_verify",
+      args: { reference: reference },
+      callback: function (r) {
+        const status = r.message && r.message.status;
+        if (status === "success") {
+          EP.submitInvoice([{ mode_of_payment: "card", amount: grandTotal }]);
+        } else if (status === "failed" || status === "abandoned") {
+          frappe.show_alert({ message: "Paystack payment was not completed", indicator: "red" });
+        } else {
+          EP.pollPaystackVerification(reference, grandTotal, attempt + 1);
+        }
+      },
+      error: function () {
+        EP.pollPaystackVerification(reference, grandTotal, attempt + 1);
+      },
     });
+  }, 4000);
+};
+
+// ---------- SPLIT PAYMENT ----------
+EP.openSplitModal = function (grandTotal) {
+  EP.splitRows = [
+    { mode: "cash", amount: grandTotal },
+  ];
+  EP.renderSplitRows(grandTotal);
+  document.getElementById("ep-split-modal").style.display = "flex";
+};
+
+EP.renderSplitRows = function (grandTotal) {
+  const wrap = document.getElementById("ep-split-rows");
+  wrap.innerHTML = EP.splitRows
+    .map(
+      (row, idx) => `
+    <div class="ep-split-row" data-idx="${idx}">
+      <select class="ep-split-mode">
+        <option value="cash" ${row.mode === "cash" ? "selected" : ""}>Cash</option>
+        <option value="momo" ${row.mode === "momo" ? "selected" : ""}>MoMo</option>
+        <option value="card" ${row.mode === "card" ? "selected" : ""}>Card</option>
+        <option value="gift" ${row.mode === "gift" ? "selected" : ""}>Gift</option>
+      </select>
+      <input type="number" class="ep-split-amount" value="${row.amount.toFixed(2)}" step="0.01">
+      <button class="ep-split-remove">✕</button>
+    </div>`
+    )
+    .join("");
+
+  wrap.querySelectorAll(".ep-split-row").forEach((rowEl) => {
+    const idx = parseInt(rowEl.dataset.idx);
+    rowEl.querySelector(".ep-split-mode").addEventListener("change", (e) => {
+      EP.splitRows[idx].mode = e.target.value;
+    });
+    rowEl.querySelector(".ep-split-amount").addEventListener("input", (e) => {
+      EP.splitRows[idx].amount = parseFloat(e.target.value) || 0;
+      EP.updateSplitRemaining(grandTotal);
+    });
+    rowEl.querySelector(".ep-split-remove").addEventListener("click", () => {
+      EP.splitRows.splice(idx, 1);
+      EP.renderSplitRows(grandTotal);
+    });
+  });
+
+  EP.updateSplitRemaining(grandTotal);
+};
+
+EP.updateSplitRemaining = function (grandTotal) {
+  const paid = EP.splitRows.reduce((sum, r) => sum + (r.amount || 0), 0);
+  const remaining = grandTotal - paid;
+  document.getElementById("ep-split-remaining-amt").textContent = `GHS ${remaining.toFixed(2)}`;
+};
+
+EP.bindSplitModal = function () {
+  document.getElementById("ep-split-modal-close").addEventListener("click", () => {
+    document.getElementById("ep-split-modal").style.display = "none";
+  });
+  document.getElementById("ep-split-add-row").addEventListener("click", () => {
+    EP.splitRows.push({ mode: "cash", amount: 0 });
+    EP.renderSplitRows(EP.getGrandTotal());
+  });
+  document.getElementById("ep-split-confirm").addEventListener("click", () => {
+    const grandTotal = EP.getGrandTotal();
+    const paid = EP.splitRows.reduce((sum, r) => sum + (r.amount || 0), 0);
+    if (Math.abs(paid - grandTotal) > 0.01) {
+      frappe.show_alert({ message: "Split amounts must add up to the grand total", indicator: "orange" });
+      return;
+    }
+    document.getElementById("ep-split-modal").style.display = "none";
+    EP.submitInvoice(EP.splitRows.map((r) => ({ mode_of_payment: r.mode, amount: r.amount })));
+  });
+};
+
+// ---------- SUBMIT INVOICE ----------
+EP.submitInvoice = function (payments) {
+  frappe.show_alert({ message: "Processing sale…", indicator: "blue" });
+
+  frappe.call({
+    method: "eusol_theme.api.create_pos_invoice",
+    args: {
+      cart: JSON.stringify(EP.cart.items.map((l) => ({ item_code: l.item_code, qty: l.qty, rate: l.rate }))),
+      payments: JSON.stringify(payments),
+      customer: EP.cart.customer,
+      discount_amount: EP.cart.discount || 0,
+    },
+    callback: function (r) {
+      if (r.message) {
+        EP.showReceipt(r.message, payments);
+        EP.resetCart();
+      }
+    },
+    error: function (err) {
+      frappe.show_alert({ message: (err && err.message) || "Checkout failed", indicator: "red" });
+    },
+  });
+};
+
+EP.resetCart = function () {
+  EP.cart = { items: [], customer: null, discount: 0, notes: "" };
+  EP.selectedPaymentMethod = null;
+  document.querySelectorAll(".ep-pay-btn").forEach((b) => b.classList.remove("selected"));
+  document.getElementById("ep-customer-name").textContent = "Walk-in Customer";
+  document.getElementById("ep-customer-points").textContent = "— loyalty points";
+  EP.renderCart();
+};
+
+// ---------- RECEIPT ----------
+EP.showReceipt = function (result, payments) {
+  const now = new Date();
+  const itemsHtml = EP.cart.items
+    .map(
+      (l) => `
+    <div class="ep-r-line"><span>${frappe.utils.escape_html(l.item_name)} ×${l.qty}</span><span>GHS ${(l.rate * l.qty).toFixed(2)}</span></div>`
+    )
+    .join("");
+
+  const paymentsHtml = payments
+    .map((p) => `<div class="ep-r-line"><span>${p.mode_of_payment.toUpperCase()}</span><span>GHS ${p.amount.toFixed(2)}</span></div>`)
+    .join("");
+
+  document.getElementById("ep-receipt-content").innerHTML = `
+    <div class="ep-r-center ep-r-bold">EUSOL ORGANICS</div>
+    <div class="ep-r-center">${now.toLocaleString()}</div>
+    <div class="ep-r-center">Invoice: ${result.invoice}</div>
+    <div class="ep-r-divider"></div>
+    ${itemsHtml}
+    <div class="ep-r-divider"></div>
+    ${paymentsHtml}
+    <div class="ep-r-divider"></div>
+    <div class="ep-r-line ep-r-bold"><span>TOTAL</span><span>GHS ${result.grand_total.toFixed(2)}</span></div>
+    <div class="ep-r-divider"></div>
+    <div class="ep-r-center">Thank you for shopping with us!</div>
+  `;
+
+  document.getElementById("ep-receipt-modal").style.display = "flex";
+};
+
+EP.bindReceiptModal = function () {
+  document.getElementById("ep-receipt-print").addEventListener("click", () => window.print());
+  document.getElementById("ep-receipt-done").addEventListener("click", () => {
+    document.getElementById("ep-receipt-modal").style.display = "none";
   });
 };
 
