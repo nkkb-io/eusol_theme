@@ -135,6 +135,31 @@
       </div>
     </div>
   </div>
+
+  <!-- SPLIT PAYMENT MODAL -->
+  <div class="ep-modal-overlay" id="ep-split-modal" style="display:none;">
+    <div class="ep-modal">
+      <div class="ep-modal-header">
+        <h3>Split Payment</h3>
+        <button class="ep-modal-close" id="ep-split-modal-close">✕</button>
+      </div>
+      <div id="ep-split-rows" class="ep-split-rows"></div>
+      <div class="ep-split-remaining">Remaining: <span id="ep-split-remaining-amt">GHS 0.00</span></div>
+      <button class="ep-pill-btn" id="ep-split-add-row">+ Add payment line</button>
+      <button class="ep-charge-btn" id="ep-split-confirm">Confirm Split</button>
+    </div>
+  </div>
+
+  <!-- RECEIPT MODAL -->
+  <div class="ep-modal-overlay" id="ep-receipt-modal" style="display:none;">
+    <div class="ep-modal ep-receipt">
+      <div id="ep-receipt-content"></div>
+      <div class="ep-receipt-actions">
+        <button class="ep-pill-btn" id="ep-receipt-print">🖨 Print</button>
+        <button class="ep-charge-btn" id="ep-receipt-done">New Sale</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <link rel="stylesheet" href="/assets/eusol_theme/css/eusol-pos.css">
