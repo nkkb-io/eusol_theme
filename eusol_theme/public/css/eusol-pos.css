@@ -15,11 +15,28 @@
   --ep-font: -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
 }
 
+/* Break out of any theme wrapper (container, padding, max-width) and own the full viewport */
+html, body{margin:0; padding:0; height:100%; overflow:hidden;}
+body .page_content,
+body .container,
+body .web-footer-wrapper,
+body .content,
+body main{
+  padding:0 !important;
+  margin:0 !important;
+  max-width:none !important;
+  width:100% !important;
+}
+
 #eusol-pos-root{
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  width:100vw;
+  height:100vh;
+  z-index:9999;
   font-family:var(--ep-font);
   background:var(--ep-bg);
   color:var(--ep-text);
-  height:100vh;
   display:flex;
   flex-direction:column;
   overflow:hidden;
@@ -34,10 +51,11 @@
   border-bottom:1px solid var(--ep-border);
 }
 .ep-brand{display:flex; align-items:center; gap:8px;}
-.ep-brand-mark{
-  width:30px; height:30px; border-radius:8px;
-  background:linear-gradient(135deg,var(--ep-accent-gold),var(--ep-accent-gold-dim));
-  color:#111; font-weight:800; display:flex; align-items:center; justify-content:center;
+.ep-brand-logo{
+  height:30px;
+  width:auto;
+  object-fit:contain;
+  border-radius:6px;
 }
 .ep-brand-name{font-weight:600; font-size:15px; letter-spacing:.2px;}
 .ep-brand-name strong{color:var(--ep-accent-gold);}
