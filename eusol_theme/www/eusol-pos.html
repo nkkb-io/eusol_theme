@@ -115,6 +115,26 @@
     </aside>
 
   </div>
+
+  <!-- CUSTOMER SEARCH MODAL -->
+  <div class="ep-modal-overlay" id="ep-customer-modal" style="display:none;">
+    <div class="ep-modal">
+      <div class="ep-modal-header">
+        <h3>Select Customer</h3>
+        <button class="ep-modal-close" id="ep-customer-modal-close">✕</button>
+      </div>
+      <input type="text" id="ep-customer-search-input" class="ep-modal-search" placeholder="Search by name or phone…" autocomplete="off">
+      <div class="ep-customer-results" id="ep-customer-results">
+        <div class="ep-customer-result-row" data-customer="">
+          <div class="ep-customer-result-avatar">👤</div>
+          <div class="ep-customer-result-info">
+            <div class="ep-customer-result-name">Walk-in Customer</div>
+            <div class="ep-customer-result-meta">No account needed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <link rel="stylesheet" href="/assets/eusol_theme/css/eusol-pos.css">
