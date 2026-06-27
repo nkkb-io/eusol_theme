@@ -211,3 +211,65 @@ def paystack_verify(reference):
 		frappe.throw(_("Could not verify Paystack transaction."))
 
 	return data.get("data")
+
+
+# ============================================================
+# PHASE 4: SHIFT / ATTENDANCE (uses HRMS Employee Checkin)
+# ============================================================
+
+def _get_employee_for_user():
+	employee = frappe.db.get_value("Employee", {"user_id": frappe.session.user}, "name")
+	if not employee:
+		frappe.throw(
+			_(
+				"No Employee record is linked to your user account ({0}). "
+				"Ask an admin to link one in Employee > User ID, so shifts can be tracked."
+			).format(frappe.session.user)
+		)
+	return employee
+
+
+@frappe.whitelist()
+def get_shift_status():
+	"""Returns whether the current user is currently clocked in, and since when."""
+	employee = frappe.db.get_value("Employee", {"user_id": frappe.session.user}, "name")
+	if not employee:
+		return {"linked": False}
+
+	last_log = frappe.get_all(
+		"Employee Checkin",
+		filters={"employee": employee},
+		fields=["log_type", "time"],
+		order_by="time desc",
+		limit=1,
+	)
+
+	clocked_in = bool(last_log and last_log[0].log_type == "IN")
+	return {
+		"linked": True,
+		"employee": employee,
+		"clocked_in": clocked_in,
+		"since": last_log[0].time if clocked_in else None,
+	}
+
+
+@frappe.whitelist()
+def clock_in():
+	employee = _get_employee_for_user()
+	doc = frappe.new_doc("Employee Checkin")
+	doc.employee = employee
+	doc.log_type = "IN"
+	doc.time = frappe.utils.now_datetime()
+	doc.insert(ignore_permissions=True)
+	return {"ok": True, "time": doc.time}
+
+
+@frappe.whitelist()
+def clock_out():
+	employee = _get_employee_for_user()
+	doc = frappe.new_doc("Employee Checkin")
+	doc.employee = employee
+	doc.log_type = "OUT"
+	doc.time = frappe.utils.now_datetime()
+	doc.insert(ignore_permissions=True)
+	return {"ok": True, "time": doc.time}
