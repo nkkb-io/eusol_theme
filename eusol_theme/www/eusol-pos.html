@@ -37,8 +37,14 @@
       <span class="ep-status-value" id="ep-shift-clock">--:--:--</span>
     </div>
     <div class="ep-status-item">
+      <button class="ep-shift-btn" id="ep-clockinout-btn">Clock In</button>
+    </div>
+    <div class="ep-status-item">
       <span class="ep-status-label">Break</span>
       <span class="ep-status-value" id="ep-break-timer">Not on break</span>
+    </div>
+    <div class="ep-status-item">
+      <button class="ep-shift-btn" id="ep-break-btn">Start Break</button>
     </div>
     <div class="ep-status-item ep-stock-alert" id="ep-stock-alert" style="display:none;">
       <span class="ep-status-label">⚠ Low stock</span>
@@ -70,6 +76,7 @@
       <div class="ep-product-grid" id="ep-product-grid">
         <div class="ep-loading">Loading products…</div>
       </div>
+      <div class="ep-held-orders" id="ep-held-orders"></div>
     </main>
 
     <!-- CART PANEL -->
