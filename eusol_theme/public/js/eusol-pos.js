@@ -23,6 +23,8 @@ frappe.ready(function () {
   EP.bindDiscountButton();
   EP.bindSplitModal();
   EP.bindReceiptModal();
+  EP.bindShiftControls();
+  EP.bindHoldOrder();
   EP.loadProducts();
   EP.renderCart();
 });
@@ -33,25 +35,30 @@ EP.bindNav = function () {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".ep-nav-btn").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
-      // Phase 1: only POS view is wired. Other views are placeholders for now.
       const view = btn.dataset.view;
-      if (view !== "pos") {
+      if (view === "pos") {
+        EP.hideHeldOrdersPanel();
+      } else if (view !== "orders") {
         frappe.show_alert({ message: `"${btn.textContent}" view is coming in a later phase`, indicator: "blue" });
       }
     });
   });
 };
 
-// ---------- SHIFT CLOCK (visual only in Phase 1; real shift doctype lands in Phase 4) ----------
+// ---------- SHIFT CLOCK ----------
 EP.startShiftClock = function () {
-  EP.shiftStart = EP.shiftStart || new Date();
   setInterval(() => {
-    const diff = Math.floor((new Date() - EP.shiftStart) / 1000);
+    const el = document.getElementById("ep-shift-clock");
+    if (!el) return;
+    if (!EP.clockedInSince) {
+      el.textContent = "--:--:--";
+      return;
+    }
+    const diff = Math.floor((new Date() - EP.clockedInSince) / 1000);
     const h = String(Math.floor(diff / 3600)).padStart(2, "0");
     const m = String(Math.floor((diff % 3600) / 60)).padStart(2, "0");
     const s = String(diff % 60).padStart(2, "0");
-    const el = document.getElementById("ep-shift-clock");
-    if (el) el.textContent = `${h}:${m}:${s}`;
+    el.textContent = `${h}:${m}:${s}`;
   }, 1000);
 };
 
@@ -797,4 +804,209 @@ EP.updateStockAlert = function () {
   } else {
     alertEl.style.display = "none";
   }
+};
+
+// ============================================================
+// PHASE 4: SHIFT CLOCK IN/OUT + BREAK + HOLD ORDERS
+// ============================================================
+
+EP.clockedInSince = null;
+EP.onBreak = false;
+EP.breakStartedAt = null;
+
+EP.bindShiftControls = function () {
+  EP.refreshShiftStatus();
+
+  document.getElementById("ep-clockinout-btn").addEventListener("click", () => {
+    if (EP.clockedInSince) {
+      EP.doClockOut();
+    } else {
+      EP.doClockIn();
+    }
+  });
+
+  document.getElementById("ep-break-btn").addEventListener("click", () => {
+    EP.onBreak = !EP.onBreak;
+    const btn = document.getElementById("ep-break-btn");
+    const label = document.getElementById("ep-break-timer");
+
+    if (EP.onBreak) {
+      EP.breakStartedAt = new Date();
+      btn.textContent = "End Break";
+      btn.classList.add("on-break");
+      EP.breakInterval = setInterval(() => {
+        const diff = Math.floor((new Date() - EP.breakStartedAt) / 1000);
+        const m = String(Math.floor(diff / 60)).padStart(2, "0");
+        const s = String(diff % 60).padStart(2, "0");
+        label.textContent = `On break — ${m}:${s}`;
+      }, 1000);
+    } else {
+      clearInterval(EP.breakInterval);
+      btn.textContent = "Start Break";
+      btn.classList.remove("on-break");
+      label.textContent = "Not on break";
+    }
+  });
+};
+
+EP.refreshShiftStatus = function () {
+  frappe.call({
+    method: "eusol_theme.api.get_shift_status",
+    callback: function (r) {
+      const status = r.message;
+      const btn = document.getElementById("ep-clockinout-btn");
+
+      if (!status || !status.linked) {
+        btn.textContent = "No Employee Linked";
+        btn.disabled = true;
+        btn.title = "Ask an admin to link your user to an Employee record";
+        return;
+      }
+
+      if (status.clocked_in) {
+        EP.clockedInSince = new Date(status.since);
+        btn.textContent = "Clock Out";
+        btn.classList.add("active");
+      } else {
+        EP.clockedInSince = null;
+        btn.textContent = "Clock In";
+        btn.classList.remove("active");
+      }
+    },
+  });
+};
+
+EP.doClockIn = function () {
+  frappe.call({
+    method: "eusol_theme.api.clock_in",
+    callback: function (r) {
+      if (r.message && r.message.ok) {
+        EP.clockedInSince = new Date(r.message.time);
+        const btn = document.getElementById("ep-clockinout-btn");
+        btn.textContent = "Clock Out";
+        btn.classList.add("active");
+        EP.flash("Clocked in");
+      }
+    },
+    error: function (err) {
+      frappe.show_alert({ message: (err && err.message) || "Could not clock in", indicator: "red" });
+    },
+  });
+};
+
+EP.doClockOut = function () {
+  frappe.call({
+    method: "eusol_theme.api.clock_out",
+    callback: function (r) {
+      if (r.message && r.message.ok) {
+        EP.clockedInSince = null;
+        const btn = document.getElementById("ep-clockinout-btn");
+        btn.textContent = "Clock In";
+        btn.classList.remove("active");
+        EP.flash("Clocked out");
+      }
+    },
+    error: function (err) {
+      frappe.show_alert({ message: (err && err.message) || "Could not clock out", indicator: "red" });
+    },
+  });
+};
+
+// ---------- HOLD ORDERS (stored in localStorage — no backend doctype needed) ----------
+EP.HOLD_KEY = "eusol_pos_held_orders";
+
+EP.bindHoldOrder = function () {
+  document.getElementById("ep-hold-btn").addEventListener("click", () => {
+    if (EP.cart.items.length === 0) {
+      frappe.show_alert({ message: "Cart is empty — nothing to hold", indicator: "orange" });
+      return;
+    }
+    const held = EP.getHeldOrders();
+    held.push({
+      id: "HOLD-" + Date.now(),
+      time: new Date().toISOString(),
+      customer_name: document.getElementById("ep-customer-name").textContent,
+      cart: JSON.parse(JSON.stringify(EP.cart)),
+    });
+    localStorage.setItem(EP.HOLD_KEY, JSON.stringify(held));
+    EP.resetCart();
+    EP.flash("Order held");
+  });
+
+  // "Orders" nav button shows the held orders panel
+  document.querySelector('.ep-nav-btn[data-view="orders"]').addEventListener("click", () => {
+    EP.showHeldOrdersPanel();
+  });
+};
+
+EP.getHeldOrders = function () {
+  try {
+    return JSON.parse(localStorage.getItem(EP.HOLD_KEY)) || [];
+  } catch (e) {
+    return [];
+  }
+};
+
+EP.showHeldOrdersPanel = function () {
+  const grid = document.getElementById("ep-product-grid");
+  const panel = document.getElementById("ep-held-orders");
+  const held = EP.getHeldOrders();
+
+  grid.style.display = "none";
+  panel.classList.add("visible");
+
+  if (held.length === 0) {
+    panel.innerHTML = '<div class="ep-loading">No held orders.</div>';
+    return;
+  }
+
+  panel.innerHTML = held
+    .map((order, idx) => {
+      const total = order.cart.items.reduce((sum, l) => sum + l.rate * l.qty, 0);
+      return `
+      <div class="ep-held-order-card" data-idx="${idx}">
+        <div class="ep-held-order-info">
+          <div>${frappe.utils.escape_html(order.customer_name)} — GHS ${total.toFixed(2)}</div>
+          <div class="ep-held-order-meta">${order.cart.items.length} item(s) · ${new Date(order.time).toLocaleString()}</div>
+        </div>
+        <div class="ep-held-order-actions">
+          <button class="resume">Resume</button>
+          <button class="delete">Delete</button>
+        </div>
+      </div>`;
+    })
+    .join("");
+
+  panel.querySelectorAll(".ep-held-order-card").forEach((card) => {
+    const idx = parseInt(card.dataset.idx);
+    card.querySelector(".resume").addEventListener("click", () => EP.resumeHeldOrder(idx));
+    card.querySelector(".delete").addEventListener("click", () => EP.deleteHeldOrder(idx));
+  });
+};
+
+EP.resumeHeldOrder = function (idx) {
+  const held = EP.getHeldOrders();
+  const order = held[idx];
+  if (!order) return;
+
+  EP.cart = order.cart;
+  held.splice(idx, 1);
+  localStorage.setItem(EP.HOLD_KEY, JSON.stringify(held));
+
+  document.getElementById("ep-customer-name").textContent = order.customer_name;
+  EP.renderCart();
+  EP.hideHeldOrdersPanel();
+  EP.flash("Order resumed");
+};
+
+EP.deleteHeldOrder = function (idx) {
+  const held = EP.getHeldOrders();
+  held.splice(idx, 1);
+  localStorage.setItem(EP.HOLD_KEY, JSON.stringify(held));
+  EP.showHeldOrdersPanel();
+};
+
+EP.hideHeldOrdersPanel = function () {
+  document.getElementById("ep-product-grid").style.display = "grid";
+  document.getElementById("ep-held-orders").classList.remove("visible");
 };
