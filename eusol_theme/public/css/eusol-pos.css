@@ -307,3 +307,29 @@ body main{
 #ep-receipt-content .ep-r-line{display:flex; justify-content:space-between;}
 #ep-receipt-content .ep-r-divider{border-top:1px dashed #999; margin:8px 0;}
 #ep-receipt-content .ep-r-bold{font-weight:700;}
+
+/* SHIFT CONTROLS */
+.ep-shift-btn{
+  background:var(--ep-bg-card); border:1px solid var(--ep-border); color:var(--ep-text);
+  padding:6px 12px; border-radius:7px; font-size:11px; cursor:pointer; font-weight:600;
+}
+.ep-shift-btn:hover{border-color:var(--ep-accent-gold);}
+.ep-shift-btn.active{background:rgba(212,175,55,.15); border-color:var(--ep-accent-gold); color:var(--ep-accent-gold);}
+.ep-shift-btn.on-break{background:rgba(229,83,75,.15); border-color:var(--ep-red); color:var(--ep-red);}
+
+/* HELD ORDERS LIST */
+.ep-held-orders{padding:20px; display:none;}
+.ep-held-orders.visible{display:block;}
+.ep-held-order-card{
+  background:var(--ep-bg-card); border:1px solid var(--ep-border); border-radius:var(--ep-radius);
+  padding:14px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;
+}
+.ep-held-order-info{font-size:13px;}
+.ep-held-order-meta{color:var(--ep-text-dim); font-size:11px; margin-top:2px;}
+.ep-held-order-actions{display:flex; gap:8px;}
+.ep-held-order-actions button{
+  background:var(--ep-bg-elevated); border:1px solid var(--ep-border); color:var(--ep-text);
+  padding:7px 14px; border-radius:7px; font-size:12px; cursor:pointer;
+}
+.ep-held-order-actions button.resume{border-color:var(--ep-accent-gold); color:var(--ep-accent-gold);}
+.ep-held-order-actions button.delete{border-color:var(--ep-red); color:var(--ep-red);}
